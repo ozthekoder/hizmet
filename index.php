@@ -83,14 +83,12 @@ $page = $eventManager->serve();
             
         </div>
             <?= $page ?>
-            <!--<h2 style="font-family: Architects Daughter; text-shadow: 0px 2px 3px rgba(0,0,0,0.4);text-align: center;margin-top: 200px;"><a href="<?= EventManager::url('home') ?>">Under Construction/a<></h2>-->
+            <?= addJSVars() ?>
             <script type="text/javascript" src="<?= EventManager::url('js/jquery.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/jasny-bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/underscore.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/main.js') ?>"></script>
-            
-            <?= addJSVars() ?>
             <?= $eventManager->js ?>
     </body>
 </html>
