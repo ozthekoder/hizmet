@@ -29,7 +29,7 @@ class EventManager
         self::$get = $_GET;
         self::$db = new DBManager();
         self::$db->load();
-        self::$currentModule = 'Today';
+        self::$currentModule = 'Home';
     }
     
     public function serve()
