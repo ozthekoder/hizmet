@@ -94,7 +94,7 @@ $page = $eventManager->serve();
             <script type="text/javascript" src="<?= EventManager::url('js/jasny-bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/underscore.js') ?>"></script> 
             <script type="text/javascript" src="<?= EventManager::url('js/main.js') ?>"></script>
-            <?= $eventManager->js ?>
+            <?php echo $eventManager->js; ?>
     </body>
 </html>
 <?php

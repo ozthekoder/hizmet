@@ -139,22 +139,3 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
 </IfModule>
-
-AddType text/xml .xml
-AddType video/mp4 .mp4 .m4v
-AddType video/mpeg .mpeg .mpg
-AddType video/quicktime .mov
-AddType video/ogg .ogv
-AddType video/webm .webm
-AddType audio/mp4 .m4a .m4b .m4r
-AddType audio/mpeg .mp3
-AddType audio/playlist .m3u
-AddType audio/x-scpls .pls
-AddType audio/ogg .ogg
-AddType audio/wav .wav
-AddType application/x-httpd-php .php
-
-php_value upload_max_filesize 500M
-php_value post_max_size 50M
-php_value max_execution_time 360
-php_value max_input_time 360
