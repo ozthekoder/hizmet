@@ -89,7 +89,7 @@ $page = $eventManager->serve();
             <?= addJSVars() ?>
             <script type="text/javascript" src="<?= EventManager::url('js/jquery.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/jquery.jcrop.js') ?>"></script>
-            <!--<script type="text/javascript" src="<?= EventManager::url('js/holder.js') ?>"></script>-->
+            <script type="text/javascript" src="<?= EventManager::url('js/holder.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/jasny-bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/underscore.js') ?>"></script> 

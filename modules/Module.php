@@ -38,11 +38,11 @@ class Module
     
     public function addCSS($css)
     {
-        $this->css .= '<link rel="stylesheet" type="text/css" href="' . EventManager::$base . $css . '" media="all" />';
+        $this->css .= '<link rel="stylesheet" type="text/css" href="' . EventManager::url($css) . '" media="all" />';
     }
     public function addJS($js)
     {
-        $this->js .= '<script type="text/javascript" src="' . EventManager::$base . $js . '"></script>';
+        $this->js .= '<script type="text/javascript" src="' . EventManager::url($js) . '"></script>';
     }
     
     public function createHTML($vars = null)
