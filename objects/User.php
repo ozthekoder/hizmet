@@ -13,6 +13,12 @@ class User extends Object
     public $accountType;
     public $resume;
     public $registeredOn;
+    public $street;
+    public $city;
+    public $state;
+    public $zip;
+    public $phone;
+    public $nationality;
     
 }
 ?>

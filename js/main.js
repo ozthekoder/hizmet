@@ -16,18 +16,20 @@ $(document).on('click', '#login-opener', function(){
 
 $(document).on('click', '#login-button', function(e){
     e.preventDefault();
-    var form = $(this).closest('form');
+    var form = $(this).closest('div').find('input');
     var params = form.serializeArray();
-    
-    $.post(url('ajax/authenticate'), params, 
+    var request = url('ajax/authenticate');
+    $.post(request, params, 
         function(data){
-            console.log(data);
-//            location.reload();
+            if(data.status)
+                location.reload();
+            else
+                alert(data.message);
         },
     'json');
 });
 
 function url(extension)
 {
-    return OZ.base + extension;
+    return 'http://' + OZ.host + OZ.base + extension;
 }

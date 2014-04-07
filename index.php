@@ -41,7 +41,9 @@ $page = $eventManager->serve();
         <link href="data:image/x-icon;base64,AAABAAEAEBAAAAEACABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAT5UxACBoBACIWv8AzMzMAL+0zgAkAL4AGTgxABRsAgBuWP4ANAyDACBHDwCe+ZIAWjj2AMSj7gBkDLMAQQvIAEQLhgA8Dn4AOhF+ALSz0wD/4P8AvYP/AD1KMAA2Vh8AFmoBAJJb/gDJrN4ALgGkAMKv1gA7CY0AOhJ8AIVb/wA2AaQAYjvvAMOg8AAyA+EAcjX3ALLRygBvNPoAOQyFAMOS/wAyALgAocDBAEMIiAAOBPEArMG+AAwD9ACebPAAPg99AGo96gA4IqMAIAzaACwAuQAhDNoAwrHSAGMGvwA6Bo8AMFcfAHxIywBECckAQZcxAEYFzAA6DswAsZD/ACcBpwALAMQAOgeNAA0B8wBVB8YAwc7MAH9c/wDBxOAAeFa1ACczMwCNw8QAQSCqACwCtQBtNfoAZQXDAL2T/wDYgf8AXy7+AMiq3wAwBJcAPU4pAG5F1gA9CcsARZUwADcOzgA6DYYAMQCjAHRXtAD+6/4AIwuNAI/FwABxNPYARACzACMBoQBFA9QAL1gfAHQ86AC/qeQAOiz/ABJrBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFwAAAAAAAAAADAgZAgxkOkoAAAAAAAAAVWg9WAEYDAtGAAAAAAAALitfSwUAAAcmAAAAAAAVFmAnHxJaUEgEAAAAAAAASWU8KjETKAoUAAAAAAAAD09FQ15ELSQQWwAAAAAAAFE4YTkzL2dSGhwAAAAAAAAAHRFCNA0/A1dUAAAAAAAAAAAsNglHIFk1VgAAAAAAAAAjITAeYiIGYw4AAAAAAAAAADs+TUFMXGYAAAAAAAAAAAApJU4yQBVdAAAAAAAAAAAAAFMbNwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAD//QAA/gEAAPwBAAD4MwAA4AcAAOAPAADADwAAwA8AAOAPAADwDwAA4A8AAPAfAADwHwAA+P8AAP//AAA=" rel="icon" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap-theme.css') ?>" media="all" />
+        <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/jasny-bootstrap.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/icons.css') ?>" media="all" />
+        <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/jquery.jcrop.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/style.css') ?>" media="all" />
         <link href='http://fonts.googleapis.com/css?family=Sniglet:400,800|Architects+Daughter' rel='stylesheet' type='text/css'>
         <?php
@@ -63,21 +65,21 @@ $page = $eventManager->serve();
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="<?= EventManager::url('home') ?>">Home</a></li>
+              <li class="<?php if(EventManager::$currentModule == 'Home') echo 'active'; ?>"><a href="<?= EventManager::url('home') ?>">Home</a></li>
             <?php if(userExists()): ?>
-                <li><a href="<?= EventManager::url('profile') ?>">Profile</a></li>
+                <li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Profile</a></li>
                 <?php if($_SESSION['user']->accountType == ADMIN): ?>
-                    <li><a href="<?= EventManager::url('profile') ?>">Admin</a></li>
+                    <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Admin</a></li>
                 <?php endif; ?>
             <?php else :?>
                     <li><a id="login-opener" style="cursor: pointer;" data-trigger="click" data-html="true" data-animation="true" data-container="body" data-toggle="popover" data-placement="bottom">Login</a></li>
-                <li><a href="<?= EventManager::url('register') ?>">Register</a></li>
+                <li class="<?php if(EventManager::$currentModule == 'Register') echo 'active'; ?>"><a href="<?= EventManager::url('register') ?>">Register</a></li>
             <?php endif; ?>
             
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="<?= EventManager::url('contactus') ?>">Contact Us</a></li>
-            <li ><a href="<?= EventManager::url('about') ?>">About</a></li>
+            <li class="<?php if(EventManager::$currentModule == 'ContactUs') echo 'active'; ?>"><a href="<?= EventManager::url('contactus') ?>">Contact Us</a></li>
+            <li class="<?php if(EventManager::$currentModule == 'About') echo 'active'; ?>"><a href="<?= EventManager::url('about') ?>">About</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -86,6 +88,8 @@ $page = $eventManager->serve();
             <?= $page ?>
             <?= addJSVars() ?>
             <script type="text/javascript" src="<?= EventManager::url('js/jquery.js') ?>"></script>
+            <script type="text/javascript" src="<?= EventManager::url('js/jquery.jcrop.js') ?>"></script>
+            <script type="text/javascript" src="<?= EventManager::url('js/holder.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/jasny-bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/underscore.js') ?>"></script> 

@@ -55,6 +55,16 @@ class EventManager
                 return $this->loadModule('Admin');
                 
                 break;
+            case 'register':
+                
+                return $this->loadModule('Register');
+                
+                break;
+            case 'crop-avatar':
+                
+                echo $this->loadModule('Crop');
+                exit;
+                break;
             case 'logout':
                 
                 return $this->loadModule('Logout');
@@ -72,11 +82,7 @@ class EventManager
     public function loadModule($moduleName)
     {
         $module = new $moduleName();
-        self::$currentModule = $module;
-        if(userExists())
-        {   
-            self::addAdminStuff();
-        }
+        self::$currentModule = $moduleName;
         $loaded =  $module->load();
         
         $this->addCSS($module->css);
@@ -113,8 +119,6 @@ class EventManager
             case 'signup':
                 $response = EventManager::signup(self::$post);
                 break;
-            case 'add-item':
-                $response = EventManager::addItem(self::$post);
         }
         echo json_encode($response);
         exit;
@@ -122,7 +126,7 @@ class EventManager
     
     public static function url($fileURL)
     {
-        return EventManager::$base . $fileURL;
+        return 'http://' . HOST . EventManager::$base . $fileURL;
     }
     
     public static function login($email, $password)
@@ -133,22 +137,6 @@ class EventManager
     public static function signup($nvp)
     {
         return self::$db->signup($nvp);
-    }
-    
-    public static function addItem($params)
-    {
-        
-    }
-    
-    public static function addAdminStuff()
-    {
-        self::$currentModule->addJS('js/admin.js');
-        $panel = new View('panels/panel.view.php');
-        $addNewItem = new View('panels/addNewItem.view.php');
-        $blockDetails = new View('panels/blockDetails.view.php');
-        jsConfig('panel', $panel->createHTML());
-        jsConfig('addNewItem', $addNewItem->createHTML());
-        jsConfig('blockDetails', $blockDetails->createHTML());
     }
 }
 

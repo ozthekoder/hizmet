@@ -111,16 +111,21 @@ foreach($vars as $var)
         $params = array_filter($params);
         $count = count($params);
         $i=0;
-        $sql = "SELECT * FROM $tableName WHERE ";
-        foreach ($params as $k => $v)
+        $sql = "SELECT * FROM $tableName ";
+        if($count > 0)
         {
-            $i++;
-            $sql .= "$k = $k";
-            if($i < $count)
+            $sql .= 'WHERE ';
+            foreach ($params as $k => $v)
             {
-                $sql .= ' AND ';
+                $i++;
+                $sql .= "$k = :$k";
+                if($i < $count)
+                {
+                    $sql .= ' AND ';
+                }
             }
         }
+            
         $statement = $this->db->prepare($sql);
         $statement->setFetchMode(PDO::FETCH_ASSOC);  
         $statement->execute($params);
@@ -295,6 +300,8 @@ foreach($vars as $var)
         else
         {
             $nvp['password'] = sha1(md5($nvp['password'] . PASS_STRING));
+            $nvp['registeredOn'] = time();
+            $nvp['accountType'] = REGULAR;
             if($user = $this->insert('User', $nvp))
             {
                 $response['status'] = true;

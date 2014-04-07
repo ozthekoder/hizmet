@@ -18,7 +18,7 @@ class Module
     public $css;
     public $js;
     
-    public function __construct($user) 
+    public function __construct($user=null) 
     {
         $this->user = $user;
         $this->vars = array();

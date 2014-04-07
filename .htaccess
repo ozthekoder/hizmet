@@ -67,7 +67,7 @@ DirectoryIndex index.php
   # Cache all files for 2 weeks after access (A).
   ExpiresDefault A1209600
 
-  <FilesMatch \.php$> 
+  <FilesMatch \.php$>
     # Do not allow PHP scripts to be cached unless they explicitly send cache
     # headers themselves. Otherwise all scripts would have to overwrite the
     # headers set by mod_expires if they want another caching behavior. This may
@@ -104,14 +104,42 @@ BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
 # END DEFLATE
 # Various rewrite rules.
 <IfModule mod_rewrite.c>
-    # Redirect /index.php to / (optional, but recommended I guess)
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /.*index\.php
-    RewriteRule ^index.php/?(.*)$ $1 [R=301,L]
+  RewriteEngine on
 
-    # Run everything else but real files through index.php
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)$ index.php/$1?%{QUERY_STRING} [L]
+  # If your site can be accessed both with and without the 'www.' prefix, you
+  # can use one of the following settings to redirect users to your preferred
+  # URL, either WITH or WITHOUT the 'www.' prefix. Choose ONLY one option:
+  #
+  # To redirect all users to access the site WITH the 'www.' prefix,
+  # (http://example.com/... will be redirected to http://www.example.com/...)
+  # adapt and uncomment the following:
+  # RewriteCond %{HTTP_HOST} ^example\.com$ [NC]
+  # RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
+  #
+  # To redirect all users to access the site WITHOUT the 'www.' prefix,
+  # (http://www.example.com/... will be redirected to http://example.com/...)
+  # uncomment and adapt the following:
+  # RewriteCond %{HTTP_HOST} ^www\.example\.com$ [NC]
+  # RewriteRule ^(.*)$ http://example.com/$1 [L,R=301]
+
+  # Modify the RewriteBase if you are using Drupal in a subdirectory or in a
+  # VirtualDocumentRoot and the rewrite rules are not working properly.
+  # For example if your site is at http://example.com/drupal uncomment and
+  # modify the following line:
+  # RewriteBase /drupal
+  #
+  # If your site is running in a VirtualDocumentRoot at http://example.com/,
+  # uncomment the following line:
+  # RewriteBase /tallygator
+
+  # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !=/favicon.ico
+  RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
+  #RewriteBase /
+  #RewriteRule ^css/(.*\.css) /combine.php?type=css&files=$1
+  #RewriteRule ^js/(.*\.js) /combine.php?type=javascript&files=$1
 </IfModule>
 
 #php_value short_open_tag on
