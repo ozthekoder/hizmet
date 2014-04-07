@@ -68,7 +68,7 @@
                 </div>
                 <form method="post" id="avatar" action="<?= EventManager::url('crop-avatar') ?>" target="cropper" enctype="multipart/form-data" style="border-left: 1px solid #c5c5c5; float: right;margin-top: -100px;height: 100px;width: 200px;">
                     <a style="width:100px;height:100px;float: right;" class="thumbnail">
-                        <img id="preview-holder" src="holder.js/92x92" alt="">
+                        <img id="preview-holder" width="92" height="92" src="<?= EventManager::url('images/default-user.png') ?>" alt="">
                     </a>
                     <div style="margin-left: 15px;" class="fileinput fileinput-new" data-provides="fileinput">
                         <span class="btn btn-default btn-file" style="display: block;">
