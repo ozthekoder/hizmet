@@ -111,7 +111,7 @@ $(document).on('click', '#submit-everything', function(){
         var value = $('input[name="password"]').val();
         if(value === $('input[name="password-repeat"]').val())
         {
-            if(value.length < 8)
+            if(value.length >= 8)
                 params.password = value;
             else
             {
