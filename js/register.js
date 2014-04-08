@@ -158,7 +158,9 @@ $(document).on('click', '#submit-everything', function(){
     if($('input[name="dob"]').val() !== '')
     {
         var value = $('input[name="dob"]').val();
-        params.dob = value;
+        var arr = value.split('/');
+        var str = arr[2] + '/' + arr[1] + '/' + arr[0];
+        params.dob = str;
        
     }
     else

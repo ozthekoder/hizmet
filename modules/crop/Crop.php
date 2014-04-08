@@ -48,9 +48,10 @@ class Crop extends Module {
                     $r = imagecopyresampled ( $dest , $src , $dst_x , $dst_y , $src_x , $src_y , $dst_w , $dst_h , $src_w , $src_h );
                     if($r)
                     {
-                        imagegif($dest, 'images/' . $_FILES['avatar']['name']);
+                        $path = 'images/' . md5(time()) . '.gif';
+                        imagegif($dest, $path);
                         unlink($this->url);
-                        $this->url = 'images/' . $_FILES['avatar']['name'];
+                        $this->url = $path;
                     }
                     break;
                 case IMAGETYPE_JPEG:
@@ -59,9 +60,10 @@ class Crop extends Module {
                     $r = imagecopyresampled ( $dest , $src , $dst_x , $dst_y , $src_x , $src_y , $dst_w , $dst_h , $src_w , $src_h );
                     if($r)
                     {
-                        imagejpeg($dest, 'images/' . $_FILES['avatar']['name']);
+                        $path = 'images/' . md5(time()) . '.jpg';
+                        imagejpeg($dest, $path);
                         unlink($this->url);
-                        $this->url = 'images/' . $_FILES['avatar']['name'];
+                        $this->url = $path;
                         
                     }
                     break;
@@ -71,9 +73,10 @@ class Crop extends Module {
                     $r = imagecopyresampled ( $dest , $src , $dst_x , $dst_y , $src_x , $src_y , $dst_w , $dst_h , $src_w , $src_h );
                     if($r)
                     {
-                        imagepng($dest, 'images/' . $_FILES['avatar']['name']);
+                        $path = 'images/' . md5(time()) . '.png';
+                        imagepng($dest, $path);
                         unlink($this->url);
-                        $this->url = 'images/' . $_FILES['avatar']['name'];
+                        $this->url = $path;
                     }
                     break;
             }

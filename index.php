@@ -65,21 +65,21 @@ $page = $eventManager->serve();
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-              <li class="<?php if(EventManager::$currentModule == 'Home') echo 'active'; ?>"><a href="<?= EventManager::url('home') ?>">Home</a></li>
+              <li class="<?php if(EventManager::$currentModule == 'Home') echo 'active'; ?>"><a href="<?= EventManager::url('home') ?>"><span class="icon-home" style="margin-right:5px;"></span>Home</a></li>
             <?php if(userExists()): ?>
                 <li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Profile</a></li>
                 <?php if($_SESSION['user']->accountType == ADMIN): ?>
                     <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Admin</a></li>
                 <?php endif; ?>
             <?php else :?>
-                    <li><a id="login-opener" style="cursor: pointer;" data-trigger="click" data-html="true" data-animation="true" data-container="body" data-toggle="popover" data-placement="bottom">Login</a></li>
-                <li class="<?php if(EventManager::$currentModule == 'Register') echo 'active'; ?>"><a href="<?= EventManager::url('register') ?>">Register</a></li>
+                    <li><a id="login-opener" style="cursor: pointer;" data-trigger="click" data-html="true" data-animation="true" data-container="body" data-toggle="popover" data-placement="bottom"><span class="icon-key" style="margin-right:5px;"></span>Login</a></li>
+                <li class="<?php if(EventManager::$currentModule == 'Register') echo 'active'; ?>"><a href="<?= EventManager::url('register') ?>"><span class="icon-signup" style="margin-right:5px;"></span>Register</a></li>
             <?php endif; ?>
             
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="<?php if(EventManager::$currentModule == 'ContactUs') echo 'active'; ?>"><a href="<?= EventManager::url('contactus') ?>">Contact Us</a></li>
-            <li class="<?php if(EventManager::$currentModule == 'About') echo 'active'; ?>"><a href="<?= EventManager::url('about') ?>">About</a></li>
+            <li class="<?php if(EventManager::$currentModule == 'ContactUs') echo 'active'; ?>"><a href="<?= EventManager::url('contactus') ?>"><span class="icon-phone2" style="margin-right:5px;"></span>Contact Us</a></li>
+            <li class="<?php if(EventManager::$currentModule == 'About') echo 'active'; ?>"><a href="<?= EventManager::url('about') ?>"><span class="icon-info" style="margin-right:5px;"></span>About</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
