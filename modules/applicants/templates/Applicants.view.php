@@ -2,7 +2,7 @@
     <div class="row" style="height:100%;">
         <?= $leftPanel ?>
         <div class="col-md-10" style="height:100%;">
-
+            Applicants
         </div> 
     </div>
 </div>

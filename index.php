@@ -1,16 +1,11 @@
 <?php
-//var_dump($dbManager->authenticateUser('asd@buncee.com', md5('1')));
-//var_dump($dbManager->query('select * from Users;'));
-//var_dump($_SERVER);
-//var_dump($eventManager);
 
-session_start();
 include_once('util.php');
 
 
 $eventManager = new EventManager();
 
-//EventManager::$db->createObjectClassFromTable('User');
+//EventManager::$db->createObjectClassFromTable('Federation');
 //$array = array(
 //    'email' => 'oozdemir2704@gmail.com',
 //    'password' => 'Kafa1500',
@@ -67,9 +62,10 @@ $page = $eventManager->serve();
           <ul class="nav navbar-nav">
               <li class="<?php if(EventManager::$currentModule == 'Home') echo 'active'; ?>"><a href="<?= EventManager::url('home') ?>"><span class="icon-home" style="margin-right:5px;"></span>Home</a></li>
             <?php if(userExists()): ?>
-                <li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Profile</a></li>
                 <?php if($_SESSION['user']->accountType == ADMIN): ?>
-                    <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Admin</a></li>
+                    <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('admin') ?>">Admin</a></li>
+                <?php else: ?>
+                    <li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Profile</a></li>
                 <?php endif; ?>
             <?php else :?>
                     <li><a id="login-opener" style="cursor: pointer;" data-trigger="click" data-html="true" data-animation="true" data-container="body" data-toggle="popover" data-placement="bottom"><span class="icon-key" style="margin-right:5px;"></span>Login</a></li>
@@ -93,6 +89,7 @@ $page = $eventManager->serve();
             <script type="text/javascript" src="<?= EventManager::url('js/bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/jasny-bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/underscore.js') ?>"></script> 
+            <script type="text/javascript" src="<?= EventManager::url('js/backbone.js') ?>"></script> 
             <script type="text/javascript" src="<?= EventManager::url('js/main.js') ?>"></script>
             <?php echo $eventManager->js; ?>
     </body>

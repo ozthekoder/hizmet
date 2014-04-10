@@ -1,4 +1,5 @@
 <?php
+session_start();
 include_once 'config.php';
 
 function __autoload($classname)

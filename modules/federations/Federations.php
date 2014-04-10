@@ -10,7 +10,7 @@
  *
  * @author osman
  */
-class Admin extends Module
+class Federations extends Module
 {
     public function __construct() {
         
@@ -18,7 +18,7 @@ class Admin extends Module
     
     public function load()
     {
-        $view = new View('admin/templates/Admin.view.php');
+        $view = new View('federations/templates/Federations.view.php');
         $leftPanel = new View('admin/templates/LeftPanel.view.php');
         $this->setVar('leftPanel', $leftPanel->createHTML());
         $this->setView($view);  

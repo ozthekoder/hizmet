@@ -1,9 +1,17 @@
-html, body s{
+html, body{
     width: 100%;
     height: 100%;
 }
 body {
-    background: url(images/bgnoise_lg.png) repeat;
+    /*background: url(images/bgnoise_lg.png) repeat;*/
+    background: #f0f0f0;
+}
+
+.selected-nav-item
+{
+    text-shadow: 0px 2px 3px rgba(0,0,0,0.3);
+    text-decoration: none;
+    background-color: #eeeeee;
 }
 
 ul.scroll-menu {
@@ -37,6 +45,39 @@ ul.scroll-menu-2x {
     max-height: 230px;
 }
 
+.navbar-bright {
+    background-color:#111155;
+    color:#fff;
+}
+
+.affix-top,.affix{
+	position: static;
+}
+#sidebar
+{
+    height: 100%;
+    background: #f9f9f9;
+}
+
+@media (min-width: 979px) {
+ #sidebar.affix-top {
+    position: static;
+  	/*margin-top:30px;*/
+  	width:200px;
+  }
+  
+ #sidebar.affix {
+    position: fixed;
+    top:50px;
+    width:200px;
+  }
+}
+
+#sidebar li.active {
+  	border:0 #eee solid;
+  	border-right-width:4px;
+}
+
 .register-panel .input-group
 {
     margin:15px 0px;
@@ -45,4 +86,9 @@ ul.scroll-menu-2x {
 .dropdown-menu li 
 {
     cursor: pointer;
+}
+
+#addNewFederationModal .input-group
+{
+    margin: 10px;
 }

@@ -51,8 +51,29 @@ class EventManager
                 
                 break;
             case 'admin':
+                switch(self::$params[1])
+                {
+                    case 'federations':
+                        return $this->loadModule('Federations');
+                        break;
+                    case 'applicants':
+                        return $this->loadModule('Applicants');
+                        break;
+                    case 'applications':
+                        return $this->loadModule('Applications');
+                        break;
+                    default :
+                        return $this->loadModule('Federations');
+                        break;
+                }
                 
-                return $this->loadModule('Admin');
+                
+                break;
+            case 'profile':
+                if(intval($_SESSION['user']->accountType) != ADMIN)
+                    return $this->loadModule('Profile');
+                else
+                    self::goToLoc(self::url ('admin'));
                 
                 break;
             case 'register':
@@ -118,6 +139,18 @@ class EventManager
                 break;
             case 'signup':
                 $response = EventManager::signup(self::$post);
+                break;
+            case 'add-new-federation':
+                if($r = EventManager::$db->insert('Federation', array( 'name' => EventManager::$post['name'] , 'website' => EventManager::$post['website'] )))
+                {
+                    $response = array(
+                        'federation' => $r,
+                        'status' => true,
+                        'message' => 'New federation has been successfully added'
+                    );
+                }
+                else
+                    $response = array('status' => false, 'message' => 'db error nigga');
                 break;
         }
         echo json_encode($response);
