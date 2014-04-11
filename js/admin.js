@@ -27,7 +27,7 @@ $(document).on('click', '#add-new-federation', function(){
                 {
                     html += '<td style="position:relative;">' 
                     if(i === 0)
-                        html += '<span class="icon-remove remove-fed" style="font-size: 23px;margin:7px;position:absolute;top:0px;right:0px;color:firebrick;display: none;"></span><span class="id-holder">'
+                        html += '<span class="icon-remove remove" style="font-size: 23px;margin:7px;position:absolute;top:0px;left:0px;color:firebrick;display: none;"></span><span class="id-holder">'
                     html += response.federation[prop] + '</span></td>';
                     i++;
                 }

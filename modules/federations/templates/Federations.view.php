@@ -55,7 +55,7 @@
                                             ?>
                                             <tr nationid="<?= $nation['id'] ?>" style="position:relative;">
                                                 <td style="font-size: 24px;"><?= $nation['name'] ?></td>
-                                                <td>
+                                                <td style="position:relative;">
                                                     <div class="btn-group">
                                                         <button type="button" name="mapping" value="" class="btn dropdown-toggle btn-default " data-toggle="dropdown">
                                                             <span class="selected-fed"><?= is_null($nation['fedName']) ? 'Unselected' : $nation['fedName'] ?></span>

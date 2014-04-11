@@ -119,4 +119,8 @@ ul.scroll-menu-2x {
 {
     display: none;
     color: green;
+    position: absolute;
+    right: 8px;
+    font-size: 34px;
+    top: 8px;
 }
