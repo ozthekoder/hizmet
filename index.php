@@ -63,9 +63,9 @@ $page = $eventManager->serve();
               <li class="<?php if(EventManager::$currentModule == 'Home') echo 'active'; ?>"><a href="<?= EventManager::url('home') ?>"><span class="icon-home" style="margin-right:5px;"></span>Home</a></li>
             <?php if(userExists()): ?>
                 <?php if($_SESSION['user']->accountType == ADMIN): ?>
-                    <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('admin') ?>">Admin</a></li>
+                    <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('admin') ?>"><span class="icon-cogs" style="margin-right:5px;"></span>Admin</a></li>
                 <?php else: ?>
-                    <li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>">Profile</a></li>
+                    <li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>"><span class="icon-user" style="margin-right:5px;"></span>Profile</a></li>
                 <?php endif; ?>
             <?php else :?>
                     <li><a id="login-opener" style="cursor: pointer;" data-trigger="click" data-html="true" data-animation="true" data-container="body" data-toggle="popover" data-placement="bottom"><span class="icon-key" style="margin-right:5px;"></span>Login</a></li>

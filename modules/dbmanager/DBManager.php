@@ -70,6 +70,19 @@ class DBManager extends Module
         
     }
     
+    public function queryNoResultSet($sql)
+    {
+        try { 
+            $statement = $this->db->prepare($sql);
+            return $statement->execute();
+        }  
+        catch(PDOException $e) {  
+            echo $e->getMessage();  
+            return false;
+        }  
+        
+    }
+    
     public function createObjectClassFromTable($tableName)
     {
         
@@ -197,7 +210,7 @@ foreach($vars as $var)
         $params = array_filter($params);
         $count = count($params);
         $i=0;
-        $sql = "UPDATE $tableName ";
+        $sql = "UPDATE $tableName SET ";
         foreach ($params as $k => $v)
         {
             $i++;
@@ -209,6 +222,23 @@ foreach($vars as $var)
         }
         $id = $params['id'];
         $sql .= "WHERE id = $id";
+        $statement = $this->db->prepare($sql);
+        if($statement->execute($params))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public function delete($tableName, $params)
+    {
+        $params = array_filter($params);
+        $id = $params['id'];
+        $sql = "DELETE FROM $tableName WHERE id = $id";
+        
         $statement = $this->db->prepare($sql);
         if($statement->execute($params))
         {

@@ -152,6 +152,35 @@ class EventManager
                 else
                     $response = array('status' => false, 'message' => 'db error nigga');
                 break;
+            case 'delete-federation':
+                $id = EventManager::$post['id'];
+                if($r = EventManager::$db->delete('Federation', array( 'id' => $id )))
+                {
+                    if($r = EventManager::$db->queryNoResultSet("UPDATE Nationality SET fedId=0 WHERE fedId=$id"))
+                    {
+
+                        $response = array(
+                            'status' => true,
+                            'message' => 'Federation has been successfully deleted.'
+                        );
+                    }
+                    else
+                        $response = array('status' => false, 'message' => 'db error nigga');
+                }
+                else
+                    $response = array('status' => false, 'message' => 'db error nigga');
+                break;
+            case 'map-nation':
+                if($r = EventManager::$db->update('Nationality', array( 'id' => EventManager::$post['nationid'], 'fedId' => EventManager::$post['fedid'] )))
+                {
+                    $response = array(
+                        'status' => true,
+                        'message' => 'Mapping has been successfully applied.'
+                    );
+                }
+                else
+                    $response = array('status' => false, 'message' => 'db error nigga');
+                break;
         }
         echo json_encode($response);
         exit;

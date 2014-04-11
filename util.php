@@ -1,7 +1,7 @@
 <?php
 session_start();
 include_once 'config.php';
-
+include_once 'underscore.php';
 function __autoload($classname)
 {
     $filename = $classname . '.php';
@@ -43,7 +43,7 @@ function jsConfig($key, $val)
 function addJSVars()
 {
     global $_jsConfig;
-    $_inlineJs = "\n<!--//--><![CDATA[//><!--\nOZ = " . json_encode($_jsConfig) . ";\n//--><!]]>\n";
+    $_inlineJs = "\n<!--//--><![CDATA[//><!--\nOZ = " . json_encode($_jsConfig, JSON_NUMERIC_CHECK) . ";\n//--><!]]>\n";
     $includes .= "<script type=\"text/javascript\">$_inlineJs</script>\n";
 
     return $includes;
