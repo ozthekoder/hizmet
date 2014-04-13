@@ -152,20 +152,32 @@ class EventManager
                 else
                     $response = array('status' => false, 'message' => 'db error nigga');
                 break;
-            case 'delete-federation':
+            case 'delete-item':
                 $id = EventManager::$post['id'];
-                if($r = EventManager::$db->delete('Federation', array( 'id' => $id )))
+                $type = EventManager::$post['type'];
+                if($r = EventManager::$db->delete(ucfirst($type), array( 'id' => $id )))
                 {
-                    if($r = EventManager::$db->queryNoResultSet("UPDATE Nationality SET fedId=0 WHERE fedId=$id"))
+                    if($type == 'Federation')
                     {
+                        if($r = EventManager::$db->queryNoResultSet("UPDATE Nationality SET fedId=0 WHERE fedId=$id"))
+                        {
 
-                        $response = array(
-                            'status' => true,
-                            'message' => 'Federation has been successfully deleted.'
-                        );
+                            $response = array(
+                                'status' => true,
+                                'message' => 'Item has been successfully deleted.'
+                            );
+                        }
+                        else
+                            $response = array('status' => false, 'message' => 'db error nigga');
                     }
-                    else
-                        $response = array('status' => false, 'message' => 'db error nigga');
+                    else if($type == 'User')
+                    {
+                        $response = array(
+                                'status' => true,
+                                'message' => 'Item has been successfully deleted.'
+                            );
+                    }
+                        
                 }
                 else
                     $response = array('status' => false, 'message' => 'db error nigga');

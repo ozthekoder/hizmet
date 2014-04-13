@@ -33,16 +33,17 @@ $(document).on('click', '#add-new-federation', function(){
                 }
             }
             html += '</tr>';
-            $('#federations-table tbody').append(html);
+            $('#items-table tbody').append(html);
         }, 'json');
     }
 });
 
-$(document).on('click', '.remove-fed', function(){
+$(document).on('click', '.remove-item', function(){
     var row = $(this).closest('tr');
-    var id = row.attr('fedid');
+    var id = row.find('.id-holder').text();
+    var type = row.attr('type');
     
-    $.post(url('ajax/delete-federation'), { id : id}, function(response){
+    $.post(url('ajax/delete-item'), { id : id, type : type}, function(response){
         if(response.status)
         {
             row.fadeOut('fast', function(){

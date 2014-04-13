@@ -90,7 +90,7 @@ ul.scroll-menu-2x {
     cursor: pointer;
 }
 
-.remove-fed
+.remove-item
 {
     text-shadow: 0px 2px 2px rgba(0,0,0,0.3);
 }
@@ -100,14 +100,25 @@ ul.scroll-menu-2x {
     margin: 10px;
 }
 
-#federations-table tr:hover span.id-holder
+#items-table tr:hover span.id-holder
 {
     visibility: hidden;
 }
 
-#federations-table tr:hover span.remove-fed
+#items-table tr:hover span.remove-item
 {
     display: block !important;
+}
+
+#items-table tr td
+{
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#items-table tr td[editable="true"]:hover
+{
+    background: #fff;
 }
 
 .outer-box

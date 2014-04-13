@@ -114,41 +114,7 @@
             <?php if(count($federations) == 0): ?>
             <h3 style="text-align: center;font-family:Architects Daughter;text-shadow:0px 2px 3px rgba(0,0,0,0.3)">No Federations have been added yet.</h3>
             <?php else: ?>
-            <table id="federations-table" class="table table-hover table-responsive">
-                <thead>
-                    <tr>
-                        <?php
-                        foreach($federations[0] as $key=>$val)
-                        {
-                        ?>
-                        <th><?= ucfirst($key) ?></th>
-                        <?php
-                        }
-                        ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    foreach($federations as $fed)
-                    {
-                    ?>
-                    <tr fedid="<?= $fed->id ?>" style="position:relative;">
-                        <?php
-                        $i = 0;
-                        foreach((array)$fed as $k=>$v)
-                        {
-                        ?>
-                            <td style="position:relative;"><?php echo $i == 0 ? '<span class="icon-remove remove-fed" style="font-size: 23px;margin:7px;position:absolute;top:0px;left:0px;color:firebrick;display: none;"></span><span class="id-holder">' : '<span>'; ?><?= $v ?></span></td>
-                        <?php
-                        $i++;
-                        }
-                        ?>
-                    </tr>
-                    <?php
-                    }
-                    ?>
-                </tbody>
-            </table>
+             <?= $table ?>
             <?php endif; ?>
         </div> 
     </div>
