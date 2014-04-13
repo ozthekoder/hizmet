@@ -5,7 +5,7 @@
     <td name="firstName" editable="true"><span><?= $firstName ?></span></td>
     <td name="lastName" editable="true"><span><?= $lastName ?></span></td>
     <td name="dob" editable="true"><span><?= $dob ?></span></td>
-    <td name="gender" editable="true"><span><?= $id == 0 ? 'Male' : 'Female' ?></span></td>
+    <td name="gender" editable="true"><span><?= $id == 1 ? 'Male' : 'Female' ?></span></td>
     <td name="avatar" editable="false"><span><img src="<?= EventManager::url($avatar) ?>" width="24" height="24"/></span></td>
     <td name="accountType" editable="true"><span><?= $id == REGULAR ? 'Applicant' : 'Admin' ?></span></td>
     <td name="resume" editable="false"><span><?= $resume ?></span></td>
