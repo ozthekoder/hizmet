@@ -22,7 +22,7 @@
                 </div>
             </div>
             <?php if(count($applicants) == 0): ?>
-            <h3 style="text-align: center;font-family:Architects Daughter;text-shadow:0px 2px 3px rgba(0,0,0,0.3)">No Applicants have been added yet.</h3>
+            <h3 style="text-align: center;font-family:Architects Daughter;text-shadow:0px 2px 3px rgba(0,0,0,0.3)">No Applicants have signed up yet.</h3>
             <?php else: ?>
             <?= $table ?>
             <?php endif; ?>

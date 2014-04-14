@@ -9,6 +9,13 @@ body {
     position: absolute;
 }
 
+.modal:nth-of-type(even) {
+    z-index: 1042 !important;
+}
+.modal-backdrop.in:nth-of-type(even) {
+    z-index: 1041 !important;
+}
+
 .selected-nav-item
 {
     text-shadow: 0px 2px 3px rgba(0,0,0,0.3);
@@ -73,9 +80,26 @@ ul.scroll-menu-2x {
     top:50px;
     width:232px;
   }
+  
+  #forms-list.affix-top {
+    position: static;
+  	/*margin-top:30px;*/
+  	width:200px;
+  }
+  
+ #forms-list.affix {
+    position: fixed;
+    top:50px;
+    width:232px;
+  }
 }
 
 #sidebar li.active {
+  	border:0 #eee solid;
+  	border-right-width:4px;
+}
+
+#forms-list li.active {
   	border:0 #eee solid;
   	border-right-width:4px;
 }

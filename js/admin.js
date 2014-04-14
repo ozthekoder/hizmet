@@ -12,6 +12,11 @@ $body.scrollspy({
 	offset: 10
 });
 
+$('#forms-panel').scrollspy({
+	target: '#forms-sidebar',
+	offset: 10
+});
+
 $(document).on('click', '#add-new-federation', function(){
     if($('input[name="name"]', $('#addNewFederationModal')).val() !== '')
     {
