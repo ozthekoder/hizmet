@@ -13,7 +13,42 @@
 class DBManager extends Module
 {
     public $db;
+    public $dependencies;
     public function __construct() {
+        $this->dependencies = array(
+            'User' => array(
+                0 => array(
+                    'name' => 'Answer',
+                    'key' => 'userId'
+                ), 
+                1 => array(
+                    'name' => 'Choice',
+                    'key' => 'userId'
+                )
+            ), 
+            'Application' => array(
+                0 => array(
+                    'name' => 'Form',
+                    'key' => 'appId'
+                )
+            ),
+            'Form' => array(
+                0 => array(
+                    'name' => 'Question',
+                    'key' => 'appId'
+                )
+            ),
+            'Question' => array(
+                0 => array(
+                    'name' => 'Answer',
+                    'key' => 'appId'
+                ), 
+                1 => array(
+                    'name' => 'Choice',
+                    'key' => 'appId'
+                )
+            ) 
+        );
     }
     
     private function openConnection()
@@ -131,7 +166,7 @@ foreach($vars as $var)
             foreach ($params as $k => $v)
             {
                 $i++;
-                $sql .= "$k = :$k";
+                $sql .= "`$k` = :$k";
                 if($i < $count)
                 {
                     $sql .= ' AND ';
@@ -179,7 +214,7 @@ foreach($vars as $var)
         $valueString = '';
         foreach($params as $key=>$val)
         {
-            $insertString .= " $key,";
+            $insertString .= " `$key`,";
             $valueString .= " :$key,";
         }
         $insertString = substr($insertString, 0, -1);
@@ -214,7 +249,7 @@ foreach($vars as $var)
         foreach ($params as $k => $v)
         {
             $i++;
-            $sql .= "$k = :$k ";
+            $sql .= "`$k` = :$k ";
             if($i < $count)
             {
                 $sql .= ', ';
@@ -236,12 +271,54 @@ foreach($vars as $var)
     public function delete($tableName, $params)
     {
         $params = array_filter($params);
+        $count = count($params);
         $id = $params['id'];
-        $sql = "DELETE FROM $tableName WHERE id = $id";
+        $sql = "DELETE FROM $tableName ";
+        
+        if($count > 0)
+        {
+            $sql .= 'WHERE ';
+            foreach ($params as $k => $v)
+            {
+                $i++;
+                $sql .= "`$k` = :$k";
+                if($i < $count)
+                {
+                    $sql .= ' AND ';
+                }
+            }
+        }
         
         $statement = $this->db->prepare($sql);
         if($statement->execute($params))
         {
+            if(isset($this->dependencies[$tableName]) && !empty($this->dependencies[$tableName]))
+            {
+                $deps = $this->dependencies[$tableName];
+                foreach ($deps as $dep)
+                {
+                    if(isset($params['id']) && !empty($params['id']))
+                    {
+                        if(!$this->delete($dep['name'], array(
+                            $dep['key'] => $id
+                        )))
+                        {
+                            return false;
+                        }
+                    }
+                    else 
+                    {
+                        if(!$this->delete($dep['name'], array(
+                            $dep['key'] => $params[$dep['key']]
+                        )))
+                        {
+                            return false;
+                        }
+                    }
+                        
+                }
+                return true;
+            }
             return true;
         }
         else

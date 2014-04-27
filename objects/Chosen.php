@@ -1,11 +1,11 @@
 <?php
     
-class Answer extends Object
+class Chosen extends Object
 {
     public $id;
+    public $choiceId;
     public $questionId;
     public $userId;
-    public $answer;
     
 }
 ?>

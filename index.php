@@ -5,7 +5,7 @@ include_once('util.php');
 
 $eventManager = new EventManager();
 
-//EventManager::$db->createObjectClassFromTable('Answer');
+EventManager::$db->createObjectClassFromTable('Chosen');
 //$array = array(
 //    'email' => 'oozdemir2704@gmail.com',
 //    'password' => 'Kafa1500',
@@ -25,6 +25,7 @@ $eventManager = new EventManager();
 //$user = new User($array);
 //$user = $user->load();
 //$user = $user->save();
+jsConfig('user', $_SESSION['user']);
 $page = $eventManager->serve();
 ?>
 <!DOCTYPE html>
@@ -37,6 +38,9 @@ $page = $eventManager->serve();
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap-theme.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/jasny-bootstrap.css') ?>" media="all" />
+        <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap-multiselect.css') ?>" media="all" />
+        <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/datepicker.css') ?>" media="all" />
+        <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/datepicker3.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/icons.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/jquery.jcrop.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/style.css') ?>" media="all" />
@@ -88,6 +92,8 @@ $page = $eventManager->serve();
             <script type="text/javascript" src="<?= EventManager::url('js/holder.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/bootstrap.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/jasny-bootstrap.js') ?>"></script>
+            <script type="text/javascript" src="<?= EventManager::url('js/bootstrap-multiselect.js') ?>"></script>
+            <script type="text/javascript" src="<?= EventManager::url('js/bootstrap-datepicker.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/underscore.js') ?>"></script> 
             <script type="text/javascript" src="<?= EventManager::url('js/backbone.js') ?>"></script> 
             <script type="text/javascript" src="<?= EventManager::url('js/main.js') ?>"></script>

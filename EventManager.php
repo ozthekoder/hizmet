@@ -51,6 +51,8 @@ class EventManager
                 
                 break;
             case 'admin':
+                if(intval($_SESSION['user']->accountType) != ADMIN)
+                    return $this->loadModule('Home');
                 switch(self::$params[1])
                 {
                     case 'federations':
@@ -177,6 +179,13 @@ class EventManager
                                 'message' => 'Item has been successfully deleted.'
                             );
                     }
+                    else if($type == 'Application')
+                    {
+                        $response = array(
+                                'status' => true,
+                                'message' => 'Item has been successfully deleted.'
+                            );
+                    }
                         
                 }
                 else
@@ -192,6 +201,104 @@ class EventManager
                 }
                 else
                     $response = array('status' => false, 'message' => 'db error nigga');
+                break;
+            case 'create-app':
+                $application = EventManager::$post;
+                $forms = $application['forms'];
+                unset($application['forms']);
+                $application['createdOn'] = time();
+                $application['lastEditedOn'] = time();
+                $app = new Application($application);
+                $check = true;
+                if($app->save())
+                {
+                    foreach($forms as $form)
+                    {
+                        $questions = $form['questions'];
+                        unset($form['questions']);
+                        $form['appId'] = $app->id;
+                        $f = new Form($form);
+                        if($f->save())
+                        {
+                            if(isset($questions) && !empty($questions))
+                            {
+                                foreach($questions as $q)
+                                {
+                                    $choices = $q['choices'];
+                                    unset($q['choices']);
+                                    $q['appId'] = $app->id;
+                                    $q['formId'] = $f->id;
+                                    $question = new Question($q);
+                                    if($question->save())
+                                    {
+                                        if(isset($choices) && !empty($choices))
+                                        {
+                                            foreach($choices as $choice)
+                                            {
+                                                $c = new Choice(array(
+                                                    'choice' => $choice,
+                                                    'appId' => $app->id,
+                                                    'questionId' => $q->id,
+                                                    'formId' => $f->id,
+                                                ));
+                                                if($c->save())
+                                                {
+
+                                                }
+                                                else
+                                                {
+                                                    $check = false;
+                                                    echo json_encode($response = array(
+                                                        'status' => false,
+                                                        'message' => 'Db Error Saving Application'
+                                                    ));
+                                                    exit;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $check = false;
+                                        echo json_encode($response = array(
+                                            'status' => false,
+                                            'message' => 'Db Error Saving Application'
+                                        ));
+                                        exit;
+                                    }
+                                }
+                            }
+                                
+                        }
+                        else
+                        {
+                            $check = false;
+                            echo json_encode($response = array(
+                                'status' => false,
+                                'message' => 'Db Error Saving Application'
+                            ));
+                            exit;
+                        }
+                    }
+                }
+                else
+                {
+                    $check = false;
+                    echo json_encode($response = array(
+                        'status' => false,
+                        'message' => 'Db Error Saving Application'
+                    ));
+                    exit;
+                }
+                
+                if($check)
+                {
+                    $response = array(
+                        'status' => true,
+                        'message' => 'Application has been successfully saved!'
+                    );
+                }
+                
                 break;
         }
         echo json_encode($response);

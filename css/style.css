@@ -9,11 +9,52 @@ body {
     position: absolute;
 }
 
-.modal:nth-of-type(even) {
+.trans-all
+{
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+    -o-transition: all 0.25s ease-in-out;
+    transition: all 0.25s ease-in-out;
+}
+
+.panel-heading
+{
+    font-family: Architects Daughter;
+}
+
+.modal:nth-child(2) {
+    z-index: 1051 !important;
+}
+.modal-backdrop.in:nth-child(2) {
+    z-index: 1041 !important;
+}
+
+.modal:nth-child(3) {
+    z-index: 1052 !important;
+}
+.modal-backdrop.in:nth-child(3) {
     z-index: 1042 !important;
 }
-.modal-backdrop.in:nth-of-type(even) {
-    z-index: 1041 !important;
+
+.modal:nth-child(4) {
+    z-index: 1053 !important;
+}
+.modal-backdrop.in:nth-child(4) {
+    z-index: 1043 !important;
+}
+
+.modal:nth-child(5) {
+    z-index: 1054 !important;
+}
+.modal-backdrop.in:nth-child(5) {
+    z-index: 1044 !important;
+}
+
+.modal:nth-child(6) {
+    z-index: 1055 !important;
+}
+.modal-backdrop.in:nth-child(6) {
+    z-index: 1045 !important;
 }
 
 .selected-nav-item
@@ -158,4 +199,68 @@ ul.scroll-menu-2x {
     right: 8px;
     font-size: 34px;
     top: 8px;
+}
+
+.form-action
+{
+    float: right;
+    font-size: 16px;
+    margin-top: 2px;
+    margin-left: 5px;
+}
+
+.form-action:hover
+{
+    text-shadow: 0px 2px 3px rgba(0,0,0,0.3);
+}
+
+#remove-form:hover
+{
+    color: firebrick;
+}
+
+#add-question:hover
+{
+    color: green;
+}
+
+.choice
+{
+    position:relative;
+    
+}
+
+.remove-choice
+{
+    margin-left:5px;
+    position:absolute;
+    right:12px;
+    top:12px;
+    display: none;
+    text-shadow: 0px 2px 3px rgba(0,0,0,0.3);
+}
+
+.choice:hover .remove-choice
+{
+    display: block;
+}
+
+.remove-choice:hover
+{
+    color:firebrick;
+}
+
+.datepicker
+{
+    z-index: 1500 !important;
+}
+
+#createNewAppModal a
+{
+    color : #000;
+}
+
+.nav-list-item
+{
+    font-family: Architects Daughter;
 }

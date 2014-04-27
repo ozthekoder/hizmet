@@ -9,6 +9,7 @@ class Application extends Object
     public $lastEditedOn;
     public $startDate;
     public $deadline;
+    public $status;
     
 }
 ?>

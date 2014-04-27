@@ -7,7 +7,7 @@ class Question extends Object
     public $appId;
     public $question;
     public $type;
-    public $choices;
+    public $order;
     
 }
 ?>

@@ -21,7 +21,9 @@ class Object
         }
         else
         {
-            return EventManager::$db->insert(get_class($this), (array)$this);
+            $saved = EventManager::$db->insert(get_class($this), (array)$this);
+            $this->id = $saved->id;
+            return $saved;
         }
     }
     
