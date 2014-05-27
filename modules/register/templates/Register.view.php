@@ -130,6 +130,6 @@
             </div>
         </div>
         
-        <button class="btn btn-primary btn-lg center-block" style="margin-bottom:20px;" id="submit-everything">Go!</button>
+        <button class="btn btn-primary btn-lg center-block" style="margin: 20px auto;display: block;" id="submit-everything">Go!</button>
     </div>
 </div>

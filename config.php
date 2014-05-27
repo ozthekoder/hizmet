@@ -20,6 +20,8 @@ define('SHORT_ANSWER', 0);
 define('ESSAY_ANSWER', 1);
 define('MULTICHOICE_SINGLESELECT', 2);
 define('MULTICHOICE_MULTISELECT', 3);
+define('INCOMPLETE', 0);
+define('COMPLETE', 1);
 define('HOST', $_SERVER['SERVER_NAME']);
 $_jsConfig = array();
 ?> 

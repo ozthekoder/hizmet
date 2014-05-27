@@ -35,17 +35,17 @@ class DBManager extends Module
             'Form' => array(
                 0 => array(
                     'name' => 'Question',
-                    'key' => 'appId'
+                    'key' => 'formId'
                 )
             ),
             'Question' => array(
                 0 => array(
                     'name' => 'Answer',
-                    'key' => 'appId'
+                    'key' => 'questionId'
                 ), 
                 1 => array(
                     'name' => 'Choice',
-                    'key' => 'appId'
+                    'key' => 'questionId'
                 )
             ) 
         );
@@ -191,7 +191,20 @@ foreach($vars as $var)
         $params = array_filter($params);
         $count = count($params);
         $i=0;
-        $sql = "SELECT * FROM $tableName";
+        $sql = "SELECT * FROM $tableName ";
+        if($count > 0)
+        {
+            $sql .= 'WHERE ';
+            foreach ($params as $k => $v)
+            {
+                $i++;
+                $sql .= "`$k` = :$k";
+                if($i < $count)
+                {
+                    $sql .= ' AND ';
+                }
+            }
+        }
         $statement = $this->db->prepare($sql);
         $statement->setFetchMode(PDO::FETCH_ASSOC);  
         $statement->execute($params);
@@ -242,6 +255,7 @@ foreach($vars as $var)
     
     public function update($tableName, $params)
     {
+        $c = count($params);
         $params = array_filter($params);
         $count = count($params);
         $i=0;
@@ -260,7 +274,14 @@ foreach($vars as $var)
         $statement = $this->db->prepare($sql);
         if($statement->execute($params))
         {
-            return true;
+            if($object = $this->select($tableName, array('id' => $id)))
+            {
+                return $object;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
@@ -409,7 +430,8 @@ foreach($vars as $var)
             $nvp['password'] = sha1(md5($nvp['password'] . PASS_STRING));
             $nvp['registeredOn'] = time();
             $nvp['accountType'] = REGULAR;
-            if($user = $this->insert('User', $nvp))
+            $user = new User($nvp);
+            if($user = $user->save())
             {
                 $response['status'] = true;
                 $response['message'] = 'Registration is successfully completed.';

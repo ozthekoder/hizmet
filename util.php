@@ -15,15 +15,15 @@ function __autoload($classname)
        $filename = 'modules/' . $filename;
        include_once($filename);
     }
-    else if(file_exists('objects/' . $filename))
-    {
-       $filename = 'objects/' . $filename;
-       include_once($filename);
-    }
     else if(file_exists('modules/' . strtolower($classname) . '/' . $filename))
     {
         $filename = 'modules/' . strtolower($classname) . '/' . $filename;
         include_once($filename);
+    }
+    else if(file_exists('objects/' . $filename))
+    {
+       $filename = 'objects/' . $filename;
+       include_once($filename);
     }
 }
 

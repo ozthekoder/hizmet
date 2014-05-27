@@ -4,7 +4,7 @@ html, body{
 }
 body {
     /*background: url(images/bgnoise_lg.png) repeat;*/
-    background: #f0f0f0;
+    /*background: #f0f0f0;*/
     top: 0px;
     position: absolute;
 }
@@ -18,6 +18,10 @@ body {
 }
 
 .panel-heading
+{
+    font-family: Architects Daughter;
+}
+.tooltip
 {
     font-family: Architects Daughter;
 }
@@ -61,7 +65,7 @@ body {
 {
     text-shadow: 0px 2px 3px rgba(0,0,0,0.3);
     text-decoration: none;
-    background-color: #eeeeee;
+    background-color: #583A52;
 }
 
 ul.scroll-menu {
@@ -96,7 +100,7 @@ ul.scroll-menu-2x {
 }
 
 .navbar-bright {
-    background-color:#111155;
+    /*background-color:#111155;*/
     color:#fff;
 }
 
@@ -113,7 +117,7 @@ ul.scroll-menu-2x {
  #sidebar.affix-top {
     position: static;
   	/*margin-top:30px;*/
-  	width:200px;
+  	/*width:200px;*/
   }
   
  #sidebar.affix {
@@ -136,12 +140,12 @@ ul.scroll-menu-2x {
 }
 
 #sidebar li.active {
-  	border:0 #eee solid;
+  	border:0 #ab6361 solid;
   	border-right-width:4px;
 }
 
 #forms-list li.active {
-  	border:0 #eee solid;
+  	border:0 #ab6361 solid;
   	border-right-width:4px;
 }
 
@@ -155,7 +159,7 @@ ul.scroll-menu-2x {
     cursor: pointer;
 }
 
-.remove-item
+.remove-item, .edit-item
 {
     text-shadow: 0px 2px 2px rgba(0,0,0,0.3);
 }
@@ -170,7 +174,7 @@ ul.scroll-menu-2x {
     visibility: hidden;
 }
 
-#items-table tr:hover span.remove-item
+#items-table tr:hover span.remove-item, #items-table tr:hover span.edit-item
 {
     display: block !important;
 }
@@ -181,7 +185,7 @@ ul.scroll-menu-2x {
     white-space: nowrap;
 }
 
-#items-table tr td[editable="true"]:hover
+#items-table tbody tr:hover
 {
     background: #fff;
 }
@@ -209,17 +213,17 @@ ul.scroll-menu-2x {
     margin-left: 5px;
 }
 
-.form-action:hover
+.form-action:hover, .create-new-form:hover, .question-action:hover
 {
     text-shadow: 0px 2px 3px rgba(0,0,0,0.3);
 }
 
-#remove-form:hover
+.remove-form:hover, .remove-question:hover
 {
     color: firebrick;
 }
 
-#add-question:hover
+.add-question:hover
 {
     color: green;
 }
@@ -255,12 +259,22 @@ ul.scroll-menu-2x {
     z-index: 1500 !important;
 }
 
-#createNewAppModal a
+/*#createNewAppModal a
 {
     color : #000;
-}
+}*/
 
 .nav-list-item
 {
     font-family: Architects Daughter;
+}
+#forms-panel .panel-heading a
+{
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+.oz-question
+{
+    position: relative;
 }

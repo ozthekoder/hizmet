@@ -13,35 +13,10 @@
                                     <h4 style="font-family:Architects Daughter;" class="modal-title" id="">Create Application</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="row " style="position: relative;">
-                                        <div data-spy="affix" class="col-md-3" id="forms-sidebar" style="padding-top: 15px;height: 448px;overflow: auto;">
-                                            <ul class="nav nav-stacked left-panel" id="forms-list">
-                                            </ul>
-                                        </div>
-                                        <div class="col-md-9" >
-                                            <div class="container-fluid" style="height: 60px;background: #e0e0e0" id="app-create-top-panel">
-                                                <div class="input-group" style="max-width:154px;float:left;margin-top:15px;">
-                                                    <span class="input-group-addon">Name</span>
-                                                    <input type="text" name="applicationName" id="appName" class="form-control input-sm" placeholder="Name..">
-                                                </div>
-                                                <div style="margin-left: 10px;margin-top: 15px;float: left;max-width: 300px;" class="input-daterange input-group" id="datepicker">
-                                                    <span class="input-group-addon" style="border-width: 1px 0px 1px 1px;">Start: </span>
-                                                    <input type="text" class="input form-control input-sm" name="startDate">
-                                                    <span class="input-group-addon">End: </span>
-                                                    <input type="text" class="input form-control input-sm" name="deadline">
-                                                </div>
-                                                <button style="margin-left: 10px;margin-top: 15px;float: left;" data-toggle="modal" data-target="#createNewFormModal" type="button" class="btn btn-default btn-sm"><span class="icon-plus" style="margin-right: 5px;"></span>Create New Form</button>
-                                            </div>
-                                            <div class="container-fluid" style="height: 388px;overflow: auto;background: #f9f9f9;" id="forms-panel">
-                                                <div style="padding-top: 15px;">
-                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </div> 
                                   <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                                     <button type="button" id="save-app" class="btn btn-primary">Save</button>
                                   </div>
                                 
@@ -62,7 +37,7 @@
                                     </div>
                                   </div>
                                   <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                                     <button type="button" id="add-new-form" class="btn btn-primary">Add</button>
                                   </div>
                             </div>
@@ -81,9 +56,9 @@
                                         <input type="text" name="name" id="question-text" class="form-control" placeholder="Enter Question..">
                                     </div>
                                     <div class="input-group btn-group" style="margin-bottom: 10px;">
-                                        <button type="button" class="btn btn-default">Type</button>
+                                        <button type="button" class="btn btn-primary">Type</button>
                                     <div class="btn-group oz-dropdown" >
-                                        <button value="0" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                        <button value="0" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                                           <span class="selected-type">Short Answer<span>
                                           <span class="caret"></span>
                                         </button>
@@ -97,7 +72,7 @@
                                     </div>
                                   </div>
                                   <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                                     <button type="button" id="add-new-question" class="btn btn-primary">Add</button>
                                   </div>
                             </div>
@@ -105,9 +80,9 @@
                     </div>
                     <div class="btn-group">
                         
-                        <button data-toggle="modal" id="create-new-app" data-target="#createNewAppModal" type="button" class="btn btn-default"><span class="icon-plus" style="margin-right: 5px;"></span>Create New Application</button>
+                        <button data-toggle="modal" id="create-new-app" data-target="#createNewAppModal" type="button" class="btn btn-primary"><span class="icon-plus" style="margin-right: 5px;"></span>Create New Application</button>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                                 <span class="icon-query" style="margin-right: 5px;"></span>
                               Query
                               <span class="caret"></span>

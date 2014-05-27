@@ -3,9 +3,11 @@
 class Chosen extends Object
 {
     public $id;
-    public $choiceId;
     public $questionId;
     public $userId;
+    public $appId;
+    public $subId;
+    public $choiceId;
     
 }
 ?>

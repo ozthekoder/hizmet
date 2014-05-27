@@ -159,7 +159,7 @@ $(document).on('click', '#submit-everything', function(){
     {
         var value = $('input[name="dob"]').val();
         var arr = value.split('/');
-        var str = arr[2] + '/' + arr[1] + '/' + arr[0];
+        var str = arr[2] + '-' + arr[0] + '-' + arr[1];
         params.dob = str;
        
     }
@@ -269,7 +269,7 @@ $(document).on('click', '#submit-everything', function(){
         alert(data.message);
         if(data.status)
         {
-            window.location.href = url('profile');
+            window.location.href = url('apply');
         }
     }, 'json');
     

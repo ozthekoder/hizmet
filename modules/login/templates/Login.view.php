@@ -7,5 +7,5 @@
         <span class="input-group-addon icon-key"></span>
         <input name="password" type="password" class="form-control" placeholder="Password..">
     </div>
-    <button id="login-button" class="btn btn-default" style="float: right;margin-bottom: 10px;">Login</button>
+    <button id="login-button" class="btn btn-primary" style="float: right;margin-bottom: 10px;">Login</button>
 </div>

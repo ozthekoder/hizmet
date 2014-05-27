@@ -5,7 +5,7 @@ include_once('util.php');
 
 $eventManager = new EventManager();
 
-EventManager::$db->createObjectClassFromTable('Chosen');
+//EventManager::$db->createObjectClassFromTable('Chosen');
 //$array = array(
 //    'email' => 'oozdemir2704@gmail.com',
 //    'password' => 'Kafa1500',
@@ -36,11 +36,11 @@ $page = $eventManager->serve();
         <title>Teach and Travel</title>
         <link href="data:image/x-icon;base64,AAABAAEAEBAAAAEACABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAT5UxACBoBACIWv8AzMzMAL+0zgAkAL4AGTgxABRsAgBuWP4ANAyDACBHDwCe+ZIAWjj2AMSj7gBkDLMAQQvIAEQLhgA8Dn4AOhF+ALSz0wD/4P8AvYP/AD1KMAA2Vh8AFmoBAJJb/gDJrN4ALgGkAMKv1gA7CY0AOhJ8AIVb/wA2AaQAYjvvAMOg8AAyA+EAcjX3ALLRygBvNPoAOQyFAMOS/wAyALgAocDBAEMIiAAOBPEArMG+AAwD9ACebPAAPg99AGo96gA4IqMAIAzaACwAuQAhDNoAwrHSAGMGvwA6Bo8AMFcfAHxIywBECckAQZcxAEYFzAA6DswAsZD/ACcBpwALAMQAOgeNAA0B8wBVB8YAwc7MAH9c/wDBxOAAeFa1ACczMwCNw8QAQSCqACwCtQBtNfoAZQXDAL2T/wDYgf8AXy7+AMiq3wAwBJcAPU4pAG5F1gA9CcsARZUwADcOzgA6DYYAMQCjAHRXtAD+6/4AIwuNAI/FwABxNPYARACzACMBoQBFA9QAL1gfAHQ86AC/qeQAOiz/ABJrBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFwAAAAAAAAAADAgZAgxkOkoAAAAAAAAAVWg9WAEYDAtGAAAAAAAALitfSwUAAAcmAAAAAAAVFmAnHxJaUEgEAAAAAAAASWU8KjETKAoUAAAAAAAAD09FQ15ELSQQWwAAAAAAAFE4YTkzL2dSGhwAAAAAAAAAHRFCNA0/A1dUAAAAAAAAAAAsNglHIFk1VgAAAAAAAAAjITAeYiIGYw4AAAAAAAAAADs+TUFMXGYAAAAAAAAAAAApJU4yQBVdAAAAAAAAAAAAAFMbNwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAD//QAA/gEAAPwBAAD4MwAA4AcAAOAPAADADwAAwA8AAOAPAADwDwAA4A8AAPAfAADwHwAA+P8AAP//AAA=" rel="icon" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap.css') ?>" media="all" />
-        <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap-theme.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/jasny-bootstrap.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/bootstrap-multiselect.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/datepicker.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/datepicker3.css') ?>" media="all" />
+        <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/lavish-bootstrap.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/icons.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/jquery.jcrop.css') ?>" media="all" />
         <link rel="stylesheet" type="text/css" href="<?= EventManager::url('css/style.css') ?>" media="all" />
@@ -51,7 +51,7 @@ $page = $eventManager->serve();
         <script type="text/javascript" src="<?= EventManager::url('js/modernizr.custom.js') ?>"></script>
     </head>
     <body>
-        <div class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -69,8 +69,9 @@ $page = $eventManager->serve();
                 <?php if($_SESSION['user']->accountType == ADMIN): ?>
                     <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('admin') ?>"><span class="icon-cogs" style="margin-right:5px;"></span>Admin</a></li>
                 <?php else: ?>
-                    <li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>"><span class="icon-user" style="margin-right:5px;"></span>Profile</a></li>
+                    <!--<li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>"><span class="icon-user" style="margin-right:5px;"></span>Profile</a></li>-->
                 <?php endif; ?>
+                <li class="<?php if(EventManager::$currentModule == 'Apply') echo 'active'; ?>"><a href="<?= EventManager::url('apply') ?>"><span class="icon-pencil" style="margin-right:5px;"></span>Apply</a></li>
             <?php else :?>
                     <li><a id="login-opener" style="cursor: pointer;" data-trigger="click" data-html="true" data-animation="true" data-container="body" data-toggle="popover" data-placement="bottom"><span class="icon-key" style="margin-right:5px;"></span>Login</a></li>
                 <li class="<?php if(EventManager::$currentModule == 'Register') echo 'active'; ?>"><a href="<?= EventManager::url('register') ?>"><span class="icon-signup" style="margin-right:5px;"></span>Register</a></li>
@@ -80,6 +81,9 @@ $page = $eventManager->serve();
           <ul class="nav navbar-nav navbar-right">
             <li class="<?php if(EventManager::$currentModule == 'ContactUs') echo 'active'; ?>"><a href="<?= EventManager::url('contactus') ?>"><span class="icon-phone2" style="margin-right:5px;"></span>Contact Us</a></li>
             <li class="<?php if(EventManager::$currentModule == 'About') echo 'active'; ?>"><a href="<?= EventManager::url('about') ?>"><span class="icon-info" style="margin-right:5px;"></span>About</a></li>
+            <?php if(userExists()): ?>
+            <li class=""><a href="<?= EventManager::url('logout') ?>"><span class="icon-exit" style="margin-right:5px;"></span>Logout</a></li>
+            <?php endif; ?>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
