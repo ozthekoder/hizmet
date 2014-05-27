@@ -19,7 +19,7 @@ class Apply extends Module
     public function load()
     {
         $today = date('Y-m-d', time());
-        $apps = EventManager::$db->query("select * from application where startDate <= '$today' and deadline > '$today' and status=1");
+        $apps = EventManager::$db->query("select * from Application where startDate <= '$today' and deadline > '$today' and status=1");
         $subs = EventManager::$db->selectAll('Submission', array('userId' => $_SESSION['user']->id));
         $view = new View('apply/templates/Apply.view.php');
         $row = new View('apply/templates/ApplicationRow.view.php');
