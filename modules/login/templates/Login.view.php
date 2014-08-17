@@ -1,6 +1,6 @@
 <div>
     <div class="input-group" style="margin-bottom: 10px;">
-        <span class="input-group-addon icon-email"></span>
+        <span class="input-group-addon icon-mail"></span>
         <input name="email" type="text" class="form-control" placeholder="E-mail..">
     </div>
     <div class="input-group" style="margin-bottom: 10px;">

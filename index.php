@@ -5,7 +5,7 @@ include_once('util.php');
 
 $eventManager = new EventManager();
 
-//EventManager::$db->createObjectClassFromTable('Chosen');
+//EventManager::$db->createObjectClassFromTable('Upload');
 //$array = array(
 //    'email' => 'oozdemir2704@gmail.com',
 //    'password' => 'Kafa1500',
@@ -51,6 +51,7 @@ $page = $eventManager->serve();
         <script type="text/javascript" src="<?= EventManager::url('js/modernizr.custom.js') ?>"></script>
     </head>
     <body>
+        <?php if(EventManager::$currentModule != 'BrowserFailure'): ?>
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
         <div class="navbar-header">
@@ -66,7 +67,7 @@ $page = $eventManager->serve();
           <ul class="nav navbar-nav">
               <li class="<?php if(EventManager::$currentModule == 'Home') echo 'active'; ?>"><a href="<?= EventManager::url('home') ?>"><span class="icon-home" style="margin-right:5px;"></span>Home</a></li>
             <?php if(userExists()): ?>
-                <?php if($_SESSION['user']->accountType == ADMIN): ?>
+                <?php if($_SESSION['user']->accountType > REGULAR): ?>
                     <li class="<?php if(EventManager::$currentModule == 'Admin') echo 'active'; ?>"><a href="<?= EventManager::url('admin') ?>"><span class="icon-cogs" style="margin-right:5px;"></span>Admin</a></li>
                 <?php else: ?>
                     <!--<li class="<?php if(EventManager::$currentModule == 'Profile') echo 'active'; ?>"><a href="<?= EventManager::url('profile') ?>"><span class="icon-user" style="margin-right:5px;"></span>Profile</a></li>-->
@@ -79,7 +80,7 @@ $page = $eventManager->serve();
             
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="<?php if(EventManager::$currentModule == 'ContactUs') echo 'active'; ?>"><a href="<?= EventManager::url('contactus') ?>"><span class="icon-phone2" style="margin-right:5px;"></span>Contact Us</a></li>
+            <li class="<?php if(EventManager::$currentModule == 'ContactUs') echo 'active'; ?>"><a href="<?= EventManager::url('contactus') ?>"><span class="icon-phone" style="margin-right:5px;"></span>Contact Us</a></li>
             <li class="<?php if(EventManager::$currentModule == 'About') echo 'active'; ?>"><a href="<?= EventManager::url('about') ?>"><span class="icon-info" style="margin-right:5px;"></span>About</a></li>
             <?php if(userExists()): ?>
             <li class=""><a href="<?= EventManager::url('logout') ?>"><span class="icon-exit" style="margin-right:5px;"></span>Logout</a></li>
@@ -89,6 +90,8 @@ $page = $eventManager->serve();
       </div>
             
         </div>
+        
+        <?php endif; ?>
             <?= $page ?>
             <?= addJSVars() ?>
             <script type="text/javascript" src="<?= EventManager::url('js/jquery.js') ?>"></script>
@@ -99,7 +102,7 @@ $page = $eventManager->serve();
             <script type="text/javascript" src="<?= EventManager::url('js/bootstrap-multiselect.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/bootstrap-datepicker.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/underscore.js') ?>"></script> 
-            <script type="text/javascript" src="<?= EventManager::url('js/backbone.js') ?>"></script> 
+            <script type="text/javascript" src="<?= EventManager::url('js/greensock/TweenMax.js') ?>"></script>
             <script type="text/javascript" src="<?= EventManager::url('js/main.js') ?>"></script>
             <?php echo $eventManager->js; ?>
     </body>

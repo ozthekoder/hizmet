@@ -34,9 +34,21 @@
         ?>
         <br/><br/>
         <select class="multiselect" multiple="multiple" name="<?= $questionId ?>">
-            <option value="multiselect-all"> Select all</option>
+            <option value="multiselect-all">Select all</option>
             <?= $choices ?>
         </select>
+        <?php
+        break;
+        case TXT_UPLOAD:
+        ?>
+            <br/><br/>
+            <input type="file" name="answer">
+            <?php
+            break;
+        case IMAGE_UPLOAD:
+        ?>
+        <br/><br/>
+        <input type="file" multiple="multiple" name="answer">
         <?php
         break;
     }

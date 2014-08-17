@@ -37,7 +37,9 @@ class EventManager
         jsConfig('base', EventManager::$base);
         jsConfig('host', HOST);
         $loginBox = new View('modules/login/templates/Login.view.php'); 
+        $modal = new View('panels/Modal.view.php'); 
         jsConfig('loginBox', $loginBox->createHTML());
+        jsConfig('modal', $modal->createHTML());
         switch(self::$params[0])
         {
             case '':
@@ -57,7 +59,7 @@ class EventManager
                 
                 break;
             case 'admin':
-                if(intval($_SESSION['user']->accountType) != ADMIN)
+                if(intval($_SESSION['user']->accountType) == REGULAR)
                     return $this->loadModule('Home');
                 switch(self::$params[1])
                 {
@@ -69,6 +71,12 @@ class EventManager
                         break;
                     case 'applications':
                         return $this->loadModule('Applications');
+                        break;
+                    case 'moderators':
+                        return $this->loadModule('Moderators');
+                        break;
+                    case 'regions':
+                        return $this->loadModule('Regions');
                         break;
                     default :
                         return $this->loadModule('Federations');
@@ -124,6 +132,11 @@ class EventManager
             case 'logout':
                 
                 return $this->loadModule('Logout');
+                
+                break;
+            case 'browser-failure':
+                
+                return $this->loadModule('BrowserFailure');
                 
                 break;
             case 'ajax':
@@ -187,6 +200,18 @@ class EventManager
                 else
                     $response = array('status' => false, 'message' => 'db error nigga');
                 break;
+            case 'add-new-region':
+                if($r = EventManager::$db->insert('Region', array( 'name' => EventManager::$post['name'])))
+                {
+                    $response = array(
+                        'region' => $r,
+                        'status' => true,
+                        'message' => 'New region has been successfully added'
+                    );
+                }
+                else
+                    $response = array('status' => false, 'message' => 'db error nigga');
+                break;
             case 'delete-item':
                 $id = EventManager::$post['id'];
                 $type = EventManager::$post['type'];
@@ -211,6 +236,26 @@ class EventManager
                                 'status' => true,
                                 'message' => 'Item has been successfully deleted.'
                             );
+                    }
+                    else if($type == 'Moderator')
+                    {
+                        $response = array(
+                                'status' => true,
+                                'message' => 'Item has been successfully deleted.'
+                            );
+                    }
+                    else if($type == 'Region')
+                    {
+                        if($r = EventManager::$db->queryNoResultSet("UPDATE State SET regionId=0 WHERE regionId=$id"))
+                        {
+
+                            $response = array(
+                                'status' => true,
+                                'message' => 'Item has been successfully deleted.'
+                            );
+                        }
+                        else
+                            $response = array('status' => false, 'message' => 'db error nigga');
                     }
                     else if($type == 'Application')
                     {
@@ -464,34 +509,182 @@ class EventManager
                     
                 break;
             case 'save-answer':
-                $questionId = self::$post['name'];
-                $answer = self::$post['value'];
-                if($ans = self::$db->select('Answer', array( 'questionId' => $questionId, 'userId' => $_SESSION['user']->id )))
+                if($_FILES['files'])
                 {
-                    $ans->answer = $answer;
-                    $ans->save();
-                    $response = array(
-                        'status' => true
-                    );
+                    $count = count($_FILES['files']);
+                    $paths = array();
+                    $i = 0;
+                    $check = true;
+                    $ans;
+                    $questionId = self::$post['questionId'];
+                                      
+                    if($ans = self::$db->select('Answer', array( 'questionId' => $questionId, 'userId' => $_SESSION['user']->id )))
+                    {
+                        $uploads = self::$db->selectAll('Upload', array( 'answerId' => $ans->id ));
+                        self::$db->delete('Upload', array( 'answerId' => $ans->id ));
+
+                        foreach ($uploads as $upload)
+                        {
+                            $path = UPLOADS . $upload->hash . '.' . $upload->extension;
+                            unlink($path);
+                        }
+                    }
+                    
+                    foreach ($_FILES['files']['tmp_name'] as $index => $file)
+                    {
+                        if(self::$post['questionType'] == TXT_UPLOAD)
+                        {
+                            if (($_FILES["files"]["type"][$index] == "application/pdf") || 
+                                ($_FILES["files"]["type"][$index] == "application/msword") || 
+                                ($_FILES["files"]["type"][$index] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
+                            {
+                                
+                                if($ans = self::$db->select('Answer', array( 'questionId' => $questionId, 'userId' => $_SESSION['user']->id )))
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    $ans = self::$db->insert('Answer', array(
+                                        'answer' => '',
+                                        'questionId' => $questionId,
+                                        'subId' => $_SESSION['submission']->id,
+                                        'appId' => $_SESSION['submission']->appId,
+                                        'userId' => $_SESSION['submission']->userId
+                                    ));
+
+
+                                }
+
+                                
+                                $fileName = $_FILES['files']['name'][$index];
+                                $hash = sha1($fileName . time());
+                                $extension = explode('.', $fileName);
+                                $extension = $extension[count($extension)-1];
+                                $path = UPLOADS . $hash . '.' . $extension;
+                                move_uploaded_file($_FILES["files"]["tmp_name"][$index], $path);
+                                
+                                self::$db->insert('Upload', array(
+                                    'answerId' => $ans->id,
+                                    'questionId' => $questionId,
+                                    'subId' => $_SESSION['submission']->id,
+                                    'appId' => $_SESSION['submission']->appId,
+                                    'hash' => $hash,
+                                    'extension' => $extension,
+                                    'type' => TXT_UPLOAD
+                                ));
+                                
+                                $paths[$i] = self::url($path);
+                            }
+                            else
+                            {
+                                $check = false;
+                                break;
+                            }
+                        }
+                        else if(self::$post['questionType'] == IMAGE_UPLOAD)
+                        {
+                            if (($_FILES["files"]["type"][$index] == "image/png") || 
+                                ($_FILES["files"]["type"][$index] == "image/jpeg") || 
+                                ($_FILES["files"]["type"][$index] == "image/gif"))
+                            {
+                                if($ans = self::$db->select('Answer', array( 'questionId' => $questionId, 'userId' => $_SESSION['user']->id )))
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    $ans = self::$db->insert('Answer', array(
+                                        'answer' => '',
+                                        'questionId' => $questionId,
+                                        'subId' => $_SESSION['submission']->id,
+                                        'appId' => $_SESSION['submission']->appId,
+                                        'userId' => $_SESSION['submission']->userId
+                                    ));
+
+
+                                }
+                                
+                                
+                                $fileName = $_FILES['files']['name'][$index];
+                                $hash = sha1($fileName . time());
+                                $extension = explode('.', $fileName);
+                                $extension = $extension[count($extension)-1];
+                                $path = UPLOADS . $hash . '.' . $extension;
+                                move_uploaded_file($_FILES["files"]["tmp_name"][$index], $path);
+                                
+                                self::$db->insert('Upload', array(
+                                    'answerId' => $ans->id,
+                                    'questionId' => $questionId,
+                                    'subId' => $_SESSION['submission']->id,
+                                    'appId' => $_SESSION['submission']->appId,
+                                    'hash' => $hash,
+                                    'extension' => $extension,
+                                    'type' => IMAGE_UPLOAD
+                                ));
+                                
+                                $paths[$i] = self::url($path);
+                            }
+                            else
+                            {
+                                $check = false;
+                                break;
+                            }
+                        }
+                        $i++;
+                    }
+                    
+                    if($check)
+                    {
+                        $response = array(
+                            'status' => true,
+                            'paths' => $paths,
+                            'message' => 'Successfully uploaded!'
+                              );
+                    }
+                    else
+                    {
+                        $response = array(
+                            'status' => false,
+                            'message' => 'Please upload the required file types only.'
+                              );
+                    }
                 }
                 else
                 {
-                    self::$db->insert('Answer', array(
-                        'answer' => $answer,
-                        'questionId' => $questionId,
-                        'subId' => $_SESSION['submission']->id,
-                        'appId' => $_SESSION['submission']->appId,
-                        'userId' => $_SESSION['submission']->userId
-                    ));
-                    $response = array(
-                        'status' => true
-                    );
+                    $questionId = self::$post['name'];
+                    $answer = self::$post['value'];
+                    if($ans = self::$db->select('Answer', array( 'questionId' => $questionId, 'userId' => $_SESSION['user']->id )))
+                    {
+                        $ans->answer = $answer;
+                        $ans->save();
+                        $response = array(
+                            'status' => true
+                        );
+                    }
+                    else
+                    {
+                        self::$db->insert('Answer', array(
+                            'answer' => $answer,
+                            'questionId' => $questionId,
+                            'subId' => $_SESSION['submission']->id,
+                            'appId' => $_SESSION['submission']->appId,
+                            'userId' => $_SESSION['submission']->userId
+                        ));
+                        $response = array(
+                            'status' => true
+                        );
+
+
+                    }
                 }
                 break;
             case 'submit-app':
                 if(isset($_SESSION['submission']) && !empty($_SESSION['submission']))
                 {
                     $_SESSION['submission']->status = COMPLETE;
+                    $_SESSION['submission']->submittedOn = time();
+                    $_SESSION['submission']->lastEditedOn = time();
                     $_SESSION['submission']->save();
                     $response = array( 'status' => true);
                 }
@@ -540,6 +733,175 @@ class EventManager
                     );
                 }
                 break;
+            case 'get-permissions':
+                $userId = self::$post['userId'];
+                $q =  "select * from Federation
+                    left join (select fedId, userId from CanModerate) as c on Federation.id = c.fedId
+                    left join (select id as uid from User where id=$userId) as u on c.userId = u.uid group by id";
+                $permissions = EventManager::$db->query($q);
+                $response = array(
+                        'status' => true,
+                        'permissions' => $permissions
+                    );
+                break;
+            case 'set-permission':
+                $userId = self::$post['userId'];
+                $fedId = self::$post['fedId'];
+                $value = self::$post['value'];
+                
+                $response = array();
+                
+                if($value == "true")
+                {
+                    if(self::$db->insert('CanModerate', array(
+                        'userId' => $userId,
+                        'fedId' => $fedId
+                    )))
+                    {
+                        $response['status'] = true;
+                        $response['message'] = 'Permission is successfully set!';
+                    }
+                    else
+                    {
+                        $response['status'] = false;
+                        $response['message'] = 'Opss! Shit.';
+                    }
+                    
+                    
+                }
+                else
+                {
+                    $response['status'] = self::$db->delete('CanModerate', array(
+                        'userId' => $userId,
+                        'fedId' => $fedId
+                    ));
+                    $response['message'] = 'Persmission is successfully removed.';
+                }
+                
+                break;
+            case 'get-region-state-mappings':
+                $sql = "select * from State
+                        left outer join (select id as regionId, `name` as regionName from Region) as r
+                        on State.regionId = r.regionId group by id;";
+                $mappings = self::$db->query($sql);
+                $regions = self::$db->selectAll('Region', array());
+                $response = array(
+                    'mappings' => $mappings,
+                    'regions' => $regions
+                );
+                break;
+            case 'map-state':
+                if($r = self::$db->update('State', array( 'id' => EventManager::$post['stateId'], 'regionId' => EventManager::$post['regionId'] )))
+                {
+                    $response = array(
+                        'status' => true,
+                        'message' => 'Mapping has been successfully applied.'
+                    );
+                }
+                else
+                    $response = array('status' => false, 'message' => 'db error nigga');
+                break;
+            case 'load-item-details':
+                $type = self::$post['type'];
+                $id = self::$post['id'];
+                
+                switch($type)
+                {
+                    case 'User':
+                        $item = self::$db->query("SELECT * FROM User
+                                                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
+                                                    on User.nationality = n.nationId
+                                                    left join (select id as fedId, `name` as fedName from Federation) as f
+                                                    on n.fedId = f.fedId
+                                                    left join (select id as stateId, short as state, regionId from State) as s
+                                                    on User.state=s.stateId
+                                                    left join (select id as regionId, `name` as regionName from Region) as r
+                                                    on s.regionId=r.regionId
+                                                    where User.id=$id limit 1;")[0];
+                        $item['submissions'] = self::$db->query("select * from
+                                                        Submission right join Application
+                                                        on Submission.appId = Application.id
+                                                        where Submission.userId=$id");
+                        $response = array(
+                            'status' => true,
+                            'item' => $item
+                        );
+                        break;
+                    case 'Application':
+                        $item = self::$db->query("SELECT * FROM User
+                                                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
+                                                    on User.nationality = n.nationId
+                                                    left join (select id as fedId, `name` as fedName from Federation) as f
+                                                    on n.fedId = f.fedId
+                                                    left join (select id as stateId, short as state, regionId from State) as s
+                                                    on User.state=s.stateId
+                                                    left join (select id as regionId, `name` as regionName from Region) as r
+                                                    on s.regionId=r.regionId
+                                                    where User.id=$id limit 1;")[0];
+                        $item['submissions'] = self::$db->query("select * from
+                                                        Submission right join Application
+                                                        on Submission.appId = Application.id
+                                                        where Submission.userId=$id");
+                        $response = array(
+                            'status' => true,
+                            'item' => $item
+                        );
+                        break;
+                }
+                break;
+                    case 'load-submission':
+                        $id = self::$post['id'];
+                        $answers = self::$db->query("select
+
+                                                    Submission.id as id,
+                                                    Submission.submittedOn as submittedOn,
+                                                    Application.id as appId, 
+                                                    Application.name as appName, 
+                                                    Application.startDate as startDate,
+                                                    Application.deadline as deadline,
+                                                    Form.id as formId,
+                                                    Form.name as formName,
+                                                    Form.order as formOrder,
+                                                    Question.id as questionId,
+                                                    Question.question as question,
+                                                    Question.order as questionOrder,
+                                                    Question.type as questionType,
+                                                    Answer.id as answerId,
+                                                    Answer.answer as answer,
+                                                    Answer.choiceId as choiceId,
+                                                    Choice.id as choiceId,
+                                                    Choice.choice
+                                                    from
+                                                    Submission left join
+                                                    Application left join 
+                                                    Form left join 
+                                                    Question left join 
+                                                    Answer left join
+                                                    Choice
+                                                    on Choice.questionId=Answer.questionId and Answer.choiceId=Choice.id 
+                                                    on Question.id=Answer.questionId 
+                                                    on Form.id=Question.formId 
+                                                    on Application.id=Form.appId 
+                                                    on Application.id=Submission.appId 
+                                                    where Submission.id=$id");
+        
+                        foreach ($answers as $index => $answer)
+                        {
+                            if($answer['questionType'] == TXT_UPLOAD || $answer['questionType'] == IMAGE_UPLOAD)
+                            {
+                                $answers[$index]['uploads'] = EventManager::$db->selectAll('Upload', array('answerId' => $answer['answerId']));
+                            }
+                                
+                        }
+                        
+                        $response = array(
+                            'sub' => $answers,
+                            'status' => true
+                        );
+                        
+                        
+                        
+                        break;
         }
         echo json_encode($response, JSON_NUMERIC_CHECK);
         exit;

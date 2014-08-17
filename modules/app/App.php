@@ -44,6 +44,12 @@ class App extends Module
                                                 on Application.id=Form.appId 
                                                 where Application.id=$appId");
         $answers = EventManager::$db->selectAll('Answer', array('appId' => $appId, 'userId' => $_SESSION['user']->id));
+        
+        foreach ($answers as $index => $answer)
+        {
+            $answers[$index]->uploads = EventManager::$db->selectAll('Upload', array('answerId' => $answer->id));
+        }
+        
         $view = new View('app/templates/App.view.php');
         $leftPanel = new View('app/templates/LeftPanel.view.php');
         $formView = new View('app/templates/Form.view.php');
@@ -86,9 +92,21 @@ class App extends Module
             $q['answer'] = '';
             foreach ($answers as $answer)
             {
-                if($answer->questionId === $questionId && isset($answer->answer) && !empty($answer->answer))
+                if($answer->questionId === $questionId)
                 {
-                    $q['answer'] = $answer->answer;
+                    $q['uploads'] = $answer->uploads;
+                    $uploads = array();
+                    
+                    foreach ($answer->uploads as $u)
+                    {
+                        $path = EventManager::url( UPLOADS . $u->hash . "." . $u->extension );
+                        $uploads[] = "<img src='$path' class='file-preview-image' />";
+                    }
+                    jsConfig($questionId, $uploads);
+                    if(isset($answer->answer) && !empty($answer->answer))
+                    {
+                        $q['answer'] = $answer->answer;
+                    }
                 }
             }
             if(isset($choices[$q['questionId']]) && !empty($choices[$q['questionId']]))
@@ -121,7 +139,9 @@ class App extends Module
         $this->setVar('leftPanel', $leftPanel->createHTML(array('forms'=> $leftInfo)));
         $this->setVar('application', $application);
         $this->setView($view);  
+        $this->addCSS('css/fileinput.css');
         $this->addJS('js/application.js');
+        $this->addJS('js/fileinput.js');
         return $this->createHTML();
     }
     

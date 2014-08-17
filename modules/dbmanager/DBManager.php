@@ -405,6 +405,12 @@ foreach($vars as $var)
             $response['status'] = true;
             $response['message'] = 'Successfully logged in!!';
             $_SESSION['user'] = new User($result);
+            
+            if($_SESSION['user']->accountType == ADMIN)
+            {
+                $_SESSION['permissions'] = $this->select('CanModerate', array( 'userId' => $_SESSION['user']->id));
+            }
+            
             return $response;
         }
         else

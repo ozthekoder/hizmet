@@ -20,6 +20,24 @@ $(function(){
           top: 50
         }
     });
+    
+    
+    
+    $('[id^="question-"]').each(function(){
+        if(!_.isUndefined(OZ[$(this).attr('questionId')]))
+        {
+            $('input[type="file"]', $(this)).fileinput({
+                initialPreviewCount : OZ[$(this).attr('questionId')].length,
+                overwriteInitial : true,
+                initialPreview: OZ[$(this).attr('questionId')]
+            });
+        }
+        else
+        {
+            $('input[type="file"]', $(this)).fileinput();
+        }
+    })
+    
     $('select').each(function(){
         var cls = 'btn btn-primary';
         if($(this).find('[selected]').length > 0 && $(this).find('[selected]').val() !== '')
@@ -128,6 +146,48 @@ $(document).on('click', '.save-answer', function(){
             updateForms();
         }
     }, 'json');
+});
+
+$(document).on('submit', 'form', function(e){
+    e.preventDefault();
+    var self = this;
+    var formData = new FormData(self);
+    $.ajax({
+            url: $(self).attr('action'),
+            type: 'POST',
+            xhr: function() {
+                var myXhr = $.ajaxSettings.xhr();
+                return myXhr;
+            },
+            success: function (data) {
+                var data = JSON.parse(data);
+                if(data.status)
+                {
+                    $(self).find('input[type="file"]').fileinput({
+                        initialPreview : data.paths,
+                        initialPreviewCount : data.paths.length,
+                        overwriteInitial : true,
+                    });
+                    
+                    var question = $(self).closest('.well');
+                    
+                    $('.label', question).addClass('label-success');
+                    $('.question-text', question).addClass('text-success');
+                    $('.btn-file', question).addClass('btn-success').removeClass('btn-default');
+                    updateForms();
+                }
+                else
+                {
+                    $(self).find('input[type="file"]').fileinput('reset');
+                    alert(data.message);
+                }
+            },
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    return false;
 });
 
 $(document).on('click', '.submit-application', function(){

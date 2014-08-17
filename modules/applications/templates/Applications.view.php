@@ -1,7 +1,7 @@
 <div class="container-fluid" style="margin-top:50px;height:calc(100% - 50px);">
     <div class="row" style="height:100%;">
         <?= $leftPanel ?>
-        <div class="col-md-10" style="height:100%;padding-top: 15px;">
+        <div class="col-md-10" style="height:100%;padding-top: 15px;overflow: scroll;">
             <div class="row">
                 <div class="col-md-7">
                     
@@ -67,6 +67,8 @@
                                           <li value="1"><a>Essay Answer</a></li>
                                           <li value="2"><a>Multiple Choice - Single Answer</a></li>
                                           <li value="3"><a>Multiple Choice - Multiple Answer</a></li>
+                                          <li value="4"><a>Text Document Upload (DOC, DOCX, TXT)</a></li>
+                                          <li value="5"><a>Image Upload (JPEG, PNG, GIF)</a></li>
                                         </ul>
                                      </div>
                                     </div>

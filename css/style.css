@@ -159,7 +159,7 @@ ul.scroll-menu-2x {
     cursor: pointer;
 }
 
-.remove-item, .edit-item
+.remove-item, .edit-item, .permissions-item
 {
     text-shadow: 0px 2px 2px rgba(0,0,0,0.3);
 }
@@ -174,7 +174,7 @@ ul.scroll-menu-2x {
     visibility: hidden;
 }
 
-#items-table tr:hover span.remove-item, #items-table tr:hover span.edit-item
+#items-table tr:hover span.remove-item, #items-table tr:hover span.edit-item, #items-table tr:hover span.permissions-item
 {
     display: block !important;
 }

@@ -41,6 +41,8 @@ class Applications extends Module
         $this->setView($view);  
         $this->addCSS('css/admin.css');
         $this->addJS('js/admin.js');
+        $this->addCSS('css/fileinput.css');
+        $this->addJS('js/fileinput.js');
         return $this->createHTML();
     }
     

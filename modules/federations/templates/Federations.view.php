@@ -1,9 +1,9 @@
 <div class="container-fluid" style="margin-top:50px;height:calc(100% - 50px);">
     <div class="row" style="height:100%;">
         <?= $leftPanel ?>
-        <div class="col-md-10" style="height:100%;padding-top: 15px;">
+        <div class="col-md-10" style="height:100%;padding-top: 15px;overflow: scroll;">
             <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-8">
                     <div class="modal fade" id="addNewFederationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -94,6 +94,7 @@
                         
                         <button data-toggle="modal" data-target="#addNewFederationModal" type="button" class="btn btn-default"><span class="icon-plus" style="margin-right: 5px;"></span>Add New Federation</button>
                         <button type="button" data-toggle="modal" data-target="#nationalityMappingsModal" class="btn btn-default"><span class="icon-earth" style="margin-right: 5px;"></span>Edit Nationality Mappings</button>
+                        <button id="edit-state-region-mappings" type="button" class="btn btn-default"><span class="icon-us-continental" style="margin-right: 5px;"></span>Edit State-Region Mappings</button>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                 <span class="icon-query" style="margin-right: 5px;"></span>

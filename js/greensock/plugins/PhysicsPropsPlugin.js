@@ -1,6 +1,6 @@
 /*!
- * VERSION: 0.1.0
- * DATE: 2013-03-27
+ * VERSION: 0.1.1
+ * DATE: 2014-04-08
  * UPDATES AND DOCS AT: http://www.greensock.com
  *
  * @license Copyright (c) 2008-2014, GreenSock. All rights reserved.
@@ -33,6 +33,7 @@
 
 			PhysicsPropsPlugin = window._gsDefine.plugin({
 				propName: "physicsProps",
+				version: "0.1.1",
 				API: 2,
 
 				//called when the tween renders for the first time. This is where initial values should be recorded and any setup routines should run.
@@ -86,7 +87,7 @@
 								}
 								val = curProp.value + (curProp.v * remainder);
 								if (curProp.r) {
-									val = (val + (val < 0 ? -0.5 : 0.5)) | 0;
+									val = Math.round(val);
 								}
 								if (curProp.f) {
 									target[curProp.p](val);
@@ -123,7 +124,7 @@
 							curProp = this._props[i];
 							val = curProp.start + ((curProp.velocity * time) + (curProp.acceleration * tt));
 							if (curProp.r) {
-								val = (val + (val < 0 ? -0.5 : 0.5)) | 0;
+								val = Math.round(val);
 							}
 							if (curProp.f) {
 								target[curProp.p](val);

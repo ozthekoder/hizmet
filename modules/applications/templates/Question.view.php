@@ -41,8 +41,19 @@
             <% _.each(choices, function(element, index, list){ %>
             <option data-id="<%= element.id %>" data-choice="<%= element.choice %>" choiceid="<% element.id %>" value="<%= element.id %>"><%= element.choice %></option>
             <% }); %>
-            
         </select>
+        <%
+        break;
+        case 4:
+        %>
+        <br/><br/>
+        <input type="file" name="answer">
+        <%
+        break;
+        case 5:
+        %>
+        <br/><br/>
+        <input type="file" multiple="multiple" name="answer">
         <%
         break;
     }

@@ -1,7 +1,6 @@
 /*!
- * VERSION: 0.9.1
- * DATE: 2014-01-10
- * JavaScript
+ * VERSION: 0.9.5
+ * DATE: 2014-04-16
  * UPDATES AND DOCS AT: http://www.greensock.com
  *
  * @license Copyright (c) 2008-2014, GreenSock. All rights reserved.
@@ -22,6 +21,8 @@
 				this._overwriteProps.length = 0;
 			},
 			_max = 999999999999999,
+			_min = 0.0000000001,
+			_recordEndMode = false,//in a typcial throwProps css tween that has an "end" defined as a function, it grabs that value initially when the tween is rendered, then again when we calculate the necessary duration, and then a 3rd time after we invalidate() the tween, so we toggle _recordEndMode to true when we're about to begin such a tween which tells the engine to grab the end value(s) once and record them as "max" and "min" on the throwProps object, thus we can skip those extra calls. Then we set it back to false when we're done with our fancy initialization routine.
 			_transforms = {x:1,y:1,z:2,scale:1,scaleX:1,scaleY:1,rotation:1,rotationZ:1,rotationX:2,rotationY:2,skewX:1,skewY:1},
 			_getClosest = function(n, values, max, min) {
 				var i = values.length,
@@ -53,7 +54,15 @@
 				} else if (adjustedEnd < min) {
 					adjustedEnd = min;
 				}
-				return {max:adjustedEnd, min:adjustedEnd};
+				return {max:adjustedEnd, min:adjustedEnd, unitFactor:curProp.unitFactor};
+			},
+			_extend = function(decoratee, extras, exclude) {
+				for (var p in extras) {
+					if (decoratee[p] === undefined && p !== exclude) {
+						decoratee[p] = extras[p];
+					}
+				}
+				return decoratee;
 			},
 			_calculateChange = ThrowPropsPlugin.calculateChange = function(velocity, ease, duration, checkpoint) {
 				if (checkpoint == null) {
@@ -67,7 +76,7 @@
 				var e = (ease instanceof Ease) ? ease : (!ease) ? TweenLite.defaultEase : new Ease(ease);
 				return Math.abs( (end - start) * e.getRatio(checkpoint) / velocity / checkpoint );
 			},
-			_calculateTweenDuration = ThrowPropsPlugin.calculateTweenDuration = function(target, vars, maxDuration, minDuration, overshootTolerance) {
+			_calculateTweenDuration = ThrowPropsPlugin.calculateTweenDuration = function(target, vars, maxDuration, minDuration, overshootTolerance, recordEnd) {
 				if (typeof(target) === "string") {
 					target = TweenLite.selector(target);
 				}
@@ -96,7 +105,7 @@
 
 				for (p in throwPropsVars) {
 
-					if (p !== "resistance" && p !== "checkpoint") {
+					if (p !== "resistance" && p !== "checkpoint" && p !== "preventOvershoot") {
 						curProp = throwPropsVars[p];
 						if (typeof(curProp) !== "object") {
 							tracker = tracker || VelocityTracker.getByTarget(target);
@@ -120,17 +129,20 @@
 							end = curVal + _calculateChange(curVelocity, ease, curDuration, checkpoint);
 							if (curProp.end !== undefined) {
 								curProp = _parseEnd(curProp, end, curProp.max, curProp.min);
+								if (recordEnd || _recordEndMode) {
+									throwPropsVars[p] = _extend(curProp, throwPropsVars[p], "end");
+								}
 							}
-							if (curProp.max !== undefined && end > Number(curProp.max)) {
-								unitFactor = curProp.unitFactor || 1; //some values are measured in special units like radians in which case our thresholds need to be adjusted accordingly.
+							if (curProp.max !== undefined && end > Number(curProp.max) + _min) {
+								unitFactor = curProp.unitFactor || ThrowPropsPlugin.defaultUnitFactors[p] || 1; //some values are measured in special units like radians in which case our thresholds need to be adjusted accordingly.
 								//if the value is already exceeding the max or the velocity is too low, the duration can end up being uncomfortably long but in most situations, users want the snapping to occur relatively quickly (0.75 seconds), so we implement a cap here to make things more intuitive. If the max and min match, it means we're animating to a particular value and we don't want to shorten the time unless the velocity is really slow. Example: a rotation where the start and natural end value are less than the snapping spot, but the natural end is pretty close to the snap.
 								curClippedDuration = ((curVal > curProp.max && curProp.min !== curProp.max) || (curVelocity * unitFactor > -15 && curVelocity * unitFactor < 45)) ? (minDuration + (maxDuration - minDuration) * 0.1) : _calculateDuration(curVal, curProp.max, curVelocity, ease, checkpoint);
 								if (curClippedDuration + overshootTolerance < clippedDuration) {
 									clippedDuration = curClippedDuration + overshootTolerance;
 								}
 
-							} else if (curProp.min !== undefined && end < Number(curProp.min)) {
-								unitFactor = curProp.unitFactor || 1; //some values are measured in special units like radians in which case our thresholds need to be adjusted accordingly.
+							} else if (curProp.min !== undefined && end < Number(curProp.min) - _min) {
+								unitFactor = curProp.unitFactor || ThrowPropsPlugin.defaultUnitFactors[p] || 1; //some values are measured in special units like radians in which case our thresholds need to be adjusted accordingly.
 								//if the value is already exceeding the min or if the velocity is too low, the duration can end up being uncomfortably long but in most situations, users want the snapping to occur relatively quickly (0.75 seconds), so we implement a cap here to make things more intuitive.
 								curClippedDuration = ((curVal < curProp.min && curProp.min !== curProp.max) || (curVelocity * unitFactor > -45 && curVelocity * unitFactor < 15)) ? (minDuration + (maxDuration - minDuration) * 0.1) : _calculateDuration(curVal, curProp.min, curVelocity, ease, checkpoint);
 								if (curClippedDuration + overshootTolerance < clippedDuration) {
@@ -165,10 +177,11 @@
 
 
 		p.constructor = ThrowPropsPlugin;
-		ThrowPropsPlugin.version = "0.9.1";
+		ThrowPropsPlugin.version = "0.9.5";
 		ThrowPropsPlugin.API = 2;
 		ThrowPropsPlugin._autoCSS = true; //indicates that this plugin can be inserted into the "css" object using the autoCSS feature of TweenLite
 		ThrowPropsPlugin.defaultResistance = 100;
+		ThrowPropsPlugin.defaultUnitFactors = {time:1000, totalTime:1000}; //setting the unitFactor to a higher value (default is 1) reduces the chance of the auto-accelerating behavior kicking in when determining durations when the initial velocity is adequately low - imagine dragging something past a boundary and then letting go - snapping back relatively quickly should be prioritized over matching the initial velocity (at least that's the behavior most people consider intuitive). But in some situations when the units are very low (like "time" of a timeline or rotation when using radians), it can kick in too frequently so this allows tweaking.
 
 		ThrowPropsPlugin.track = function(target, props, types) {
 			return VelocityTracker.track(target, props, types);
@@ -203,10 +216,11 @@
 					max = {},
 					end = {},
 					res = {},
+					preventOvershoot = {},
 					hasResistance, val, p, data, tracker;
 				_cssVars = {};
 				for (p in e) {
-					if (p !== "resistance") {
+					if (p !== "resistance" && p !== "preventOvershoot") {
 						val = e[p];
 						if (typeof(val) === "object") {
 							if (val.velocity !== undefined && typeof(val.velocity) === "number") {
@@ -223,6 +237,9 @@
 							}
 							if (val.max !== undefined) {
 								max[p] = val.max;
+							}
+							if (val.preventOvershoot) {
+								preventOvershoot[p] = true;
 							}
 							if (val.resistance !== undefined) {
 								hasResistance = true;
@@ -247,10 +264,13 @@
 				_cssProxy = data.proxy;
 				velocities = data.end;
 				for (p in _cssProxy) {
-					_cssVars[p] = {velocity:velocities[p], min:min[p], max:max[p], end:end[p], resistance:res[p]};
+					_cssVars[p] = {velocity:velocities[p], min:min[p], max:max[p], end:end[p], resistance:res[p], preventOvershoot:preventOvershoot[p]};
 				}
 				if (e.resistance != null) {
 					_cssVars.resistance = e.resistance;
+				}
+				if (e.preventOvershoot) {
+					_cssVars.preventOvershoot = true;
 				}
 				pt = new CSSPropTween(t, "throwProps", 0, 0, data.pt, 2);
 				pt.plugin = plugin;
@@ -266,6 +286,10 @@
 			if (!vars.throwProps) {
 				vars = {throwProps:vars};
 			}
+			if (overshootTolerance === 0) {
+				vars.throwProps.preventOvershoot = true;
+			}
+			_recordEndMode = true; //if we encounter a function-based "end" value, ThrowPropsPlugin will record it as "max" and "min" properties, replacing "end" (this is an optimization so that the function only gets called once)
 			var tween = new TweenLite(target, 1, vars);
 			tween.render(0, true, true); //we force a render so that the CSSPlugin instantiates and populates the _cssProxy and _cssVars which we need in order to calculate the tween duration. Remember, we can't use the regular target for calculating the duration because the current values wouldn't be able to be grabbed like target["propertyName"], as css properties can be complex like boxShadow:"10px 10px 20px 30px red" or backgroundPosition:"25px 50px". The proxy is the result of breaking all that complex data down and finding just the numeric values and assigning them to a generic proxy object with unique names. THAT is what the _calculateTweenDuration() can look at. We also needed to do the same break down of any min or max or velocity data
 			if (tween.vars.css) {
@@ -275,10 +299,13 @@
 				} else {
 					_last._onInitTween(_cssProxy, _lastValue, tween);
 				}
+				_recordEndMode = false;
 				return tween;
 			} else {
 				tween.kill();
-				return new TweenLite(target, _calculateTweenDuration(target, vars, maxDuration, minDuration, overshootTolerance), vars);
+				tween = new TweenLite(target, _calculateTweenDuration(target, vars, maxDuration, minDuration, overshootTolerance), vars);
+				_recordEndMode = false;
+				return tween;
 			}
 		};
 		
@@ -289,11 +316,12 @@
 			_lastValue = value;
 			var ease = tween._ease,
 				checkpoint = isNaN(value.checkpoint) ? 0.05 : Number(value.checkpoint),
-				duration = tween._duration, 
+				duration = tween._duration,
+				preventOvershoot = value.preventOvershoot,
 				cnt = 0,
 				p, curProp, curVal, isFunc, velocity, change1, end, change2, tracker;
 			for (p in value) {
-				if (p !== "resistance" && p !== "checkpoint") {
+				if (p !== "resistance" && p !== "checkpoint" && p !== "preventOvershoot") {
 					curProp = value[p];
 					if (typeof(curProp) === "number") {
 						velocity = Number(curProp) || 0;
@@ -315,12 +343,22 @@
 						end = curVal + change1;
 						if (curProp.end !== undefined) {
 							curProp = _parseEnd(curProp, end, curProp.max, curProp.min);
+							if (_recordEndMode) {
+								value[p] = _extend(curProp, value[p], "end");
+							}
 						}
 						if (curProp.max !== undefined && Number(curProp.max) < end) {
-							change2 = (curProp.max - curVal) - change1;
-							
+							if (preventOvershoot || curProp.preventOvershoot) {
+								change1 = curProp.max - curVal;
+							} else {
+								change2 = (curProp.max - curVal) - change1;
+							}
 						} else if (curProp.min !== undefined && Number(curProp.min) > end) {
-							change2 = (curProp.min - curVal) - change1;
+							if (preventOvershoot || curProp.preventOvershoot) {
+								change1 = curProp.min - curVal;
+							} else {
+								change2 = (curProp.min - curVal) - change1;
+							}
 						}
 					}
 					this._props[cnt++] = {p:p, s:curVal, c1:change1, c2:change2, f:isFunc, r:false};
@@ -357,7 +395,7 @@
 				cp = this._props[i];
 				val = cp.s + cp.c1 * v + cp.c2 * v * v;
 				if (cp.r) {
-					val = (val + ((val > 0) ? 0.5 : -0.5)) | 0;
+					val = Math.round(val);
 				}
 				if (cp.f) {
 					this.target[cp.p](val);

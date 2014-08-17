@@ -42,6 +42,18 @@ $(document).on('click', '#save-app', function(){
     }
 });
 
+$(document).on('hidden.bs.modal', '.generalModal', function(){
+    $(this).remove();
+});
+
+$(document).on('click', '#modalDone', function(){
+    $(this).closest('.modal').modal('hide');
+});
+
+$(document).on('click', '#modalCancel', function(){
+    $(this).closest('.modal').modal('hide');
+});
+
 $(document).on('changeDate', '#datepicker', function(e){
     if(e.format(0,'yyyy-mm-dd') !== '')
         OZ.application[$(e.target).attr('name')] = e.format(0,'yyyy-mm-dd');
@@ -63,7 +75,7 @@ $(document).on('click', '#add-new-federation', function(){
         $.post(url('ajax/add-new-federation'), params, function(response){
             alert(response.message);
             var html = '';
-            html += '<tr>';
+            html += '<tr type="Federation">';
             var i = 0;
             for(var prop in response.federation)
             {
@@ -260,6 +272,8 @@ $(document).on('click', '#question-type li', function(){
     {
         case 0:
         case 1:
+        case 4:
+        case 5:
             break;
         case 2:
         case 3:
@@ -300,8 +314,8 @@ $(document).on('click', '#add-new-question', function(){
     {
         case 0:
         case 1:
-            
             break;
+        
         case 2:
         case 3:
             if(parent.find('.well').length === 0)
@@ -337,12 +351,18 @@ $(document).on('click', '#add-new-question', function(){
     $('input', parent).val('');
     $('.oz-dropdown', parent).find('button').html('<span class="selected-type">Short Answer</span><span class="caret" style="margin-left: 2px;"></span>').val(0);
     
+    if(type === 4 || type === 5)
+    {
+        $('input[type="file"]').fileinput();
+    }
+    
     $('.well, #add-choice-input', parent).remove();
     parent.modal('hide');
     
 });
 
-$(document).on('click', '.remove-item', function(){
+$(document).on('click', '.remove-item', function(e){
+    e.stopPropagation();
     var row = $(this).closest('tr');
     var id = row.find('.id-holder').text();
     var type = row.attr('type');
@@ -359,7 +379,127 @@ $(document).on('click', '.remove-item', function(){
     }, 'json');
 });
 
-$(document).on('click', '.edit-item', function(){
+$(document).on('change', '[modalid="permissions"] input[type="checkbox"]', function(){
+    var value = $(this).prop('checked');
+    var fedId = $(this).attr('fedId');
+    var userId = $(this).attr('userId');
+    $.post(url('ajax/set-permission'), { fedId : fedId, userId : userId, value : value }, function(response){
+        alert(response.message);
+    }, 'json');
+});
+
+$(document).on('click', '#add-new-region', function(){
+    
+    var template = _.template(OZ.modal, { 
+                    modalId : 'addNewRegionModal',
+                    modalTitle : 'Add New Region',
+                    closeButton : true,
+                    closeButtonText : 'Close',
+                    doneButton : true,
+                    doneButtonText : 'Add',
+                    size: 'medium',
+                    modalContent : OZ.createRegion
+                });
+
+        $(template).modal();
+        
+});
+
+$(document).on('click', '[modalid="addNewRegionModal"] #modalDone', function(){
+    var modal = $(this).closest('.modal');
+    var params = $('input', modal).serializeArray();
+    
+    $.post(url('ajax/add-new-region'), params, function(response){
+        alert(response.message);
+        var html = '';
+        html += '<tr type="Region">';
+        var i = 0;
+        for(var prop in response.region)
+        {
+            if(response.region.hasOwnProperty(prop))
+            {
+                html += '<td style="position:relative;">' 
+                if(i === 0)
+                    html += '<span class="icon-remove remove-item" style="font-size: 23px;margin:7px;position:absolute;top:0px;left:0px;color:firebrick;display: none;"></span><span class="id-holder">'
+                html += response.region[prop] + '</span></td>';
+                i++;
+            }
+        }
+        html += '</tr>';
+        $('#items-table tbody').append(html);
+    }, 'json');
+});
+
+$(document).on('click', '#edit-state-region-mappings', function(){
+    
+    $.post(url('ajax/get-region-state-mappings'),{},function(response){
+        var rows = '';
+        var regions = '';
+        _.each(response.regions, function(item, index, list){
+            regions += _.template('<li regionId="<%= id %>"><a href="#"><%= name %></a></li>', item);
+        });
+        
+        _.each(response.mappings, function(item, index, list){
+            item.regions = regions;
+            rows += _.template(OZ.regionStateRow, item);
+        });
+        
+        var content = _.template(OZ.regionStateTable, { rows : rows });
+        
+        var template = _.template(OZ.modal, { 
+                    modalId : 'permissions',
+                    modalTitle : 'Region - State Mappings',
+                    doneButton : false,
+                    closeButton : true,
+                    closeButtonText : 'Close',
+                    modalContent : content,
+                    size : 'medium'
+                });
+
+        $(template).modal();
+        
+    }, 'json');
+        
+});
+
+$(document).on('click', '.permissions-item', function(){
+    var row = $(this).closest('tr');
+    var id = row.find('.id-holder').text();
+    var type = row.attr('type');
+    
+    $.post(url('ajax/get-permissions'), { userId : id }, function(response){
+        if(response.status)
+        {
+            var tpl = '<tr fedId="<%= id %>"><td><%= name %></td><td><input fedId="<%= id %>" userId="' + id + '" type="checkbox" value="<%= !_.isNull(uid) %>" <%= !_.isNull(uid) ? "checked" : ""  %> /></td></tr>';
+            var rows = '';
+            _.each(response.permissions, function(item, index, list){
+                rows += _.template(tpl, item);
+            });
+            
+            var table = _.template(OZ.modalTable, { tableContent : rows });
+            
+            var template = _.template(OZ.modal, { 
+                modalId : 'permissions',
+                modalTitle : 'Edit Permissions',
+                doneButton : true,
+                closeButton : false,
+                doneButtonText : 'Done',
+                modalContent : table,
+                size : 'medium'
+            });
+            
+            $(template).modal();
+        }
+        else
+        {
+            alert('Opps server problem dude.')
+        }
+        console.log(response);
+    }, 'json');
+});
+
+$(document).on('click', '.edit-item', function(e){
+    e.stopPropagation();
     var row = $(this).closest('tr');
     var id = row.find('.id-holder').text();
     var type = row.attr('type');
@@ -396,7 +536,7 @@ $(document).on('click', '.edit-item', function(){
                     offset: 10
             });
             $('#datepicker').datepicker();
-            
+            $('input[type="file"]').fileinput();
             var data = $('#createNewAppModal .creation-modal-content').data();
             
             OZ.application = {
@@ -433,6 +573,24 @@ $(document).on('click', '.edit-item', function(){
             }
         }
     });
+});
+
+$(document).on('click', '#region-mapping-selection li', function(){
+    var row = $(this).closest('tr');
+    var stateId = row.attr('stateid');
+    var regionId = $(this).attr('regionid');
+    var that = this;
+    $.post(url('ajax/map-state'), { stateId : stateId, regionId : regionId }, function(response){
+        if(response.status)
+        {
+            row.find('.selected-region').text($(that).find('a').text());
+            row.find('.map-success').fadeIn(500, function(){
+                $(this).fadeOut(500);
+            });
+        }
+        
+        
+    }, 'json');
 });
 
 $(document).on('click', '#mapping-selection li', function(){
@@ -571,5 +729,129 @@ function layoutForms()
                     offset: 10
             });
             $('#datepicker').datepicker();
+            $('input[type="file"]').fileinput();
     
+}
+
+$(document).on('click', '#items-table > tbody > tr:not([type="Detail"])', function(){
+    var id = parseInt($(this).attr('itemid'));
+    if(id !== OZ.editingRow)
+    {
+        closeItemDetails(OZ.editingRow);
+        var id = parseInt($(this).attr('itemid'));
+        var type = $(this).attr('type');
+        loadItemDetails(type, id, this);
+    }
+    else
+    {
+        closeItemDetails(id);
+    }
+});
+
+$(document).on('click', '#detail-submissions-table tr', function(){
+    var id = parseInt($(this).attr('id'));
+    $.post(url('ajax/load-submission'), { id : id }, function(response){
+        console.log(response);
+        var questions = _.groupBy(response.sub, function(item){ return item.questionId });
+        OZ.foo = response.sub;
+        var q = {};
+        if(response.status)
+        {
+            _.each(questions, function(item, index, list){
+                var questionType = item[0].questionType;
+                var concat = '';
+                _.each(item, function(answer, i, l){
+                    if(questionType > 1 && questionType < 4)
+                    {
+                        concat += answer.choice + '<br/>'
+                    }
+                });
+                
+                if(questionType > 1 && questionType < 4)
+                {
+                    item[0].chosen = concat;
+                }
+                else if(questionType === 5)
+                {
+                    _.each(item[0].uploads, function(upload, i, l){
+                        concat += '<img style="cursor:pointer;margin:5px;max-width:100px;height:auto;" class="img-thumbnail uploaded-img" src="' + url('uploads/' + upload.hash + '.' + upload.extension) + '" />'
+                    });
+                    item[0].files = concat;
+                }
+                else if(questionType === 4)
+                {
+                    _.each(item[0].uploads, function(upload, i, l){
+                        concat += '<a style="" class="" href="' + url('uploads/' + upload.hash + '.' + upload.extension) + '">Uploaded File</a>'
+                    });
+                    item[0].files = concat;
+                }
+                
+                var questionView = _.template(OZ.questionView, item[0]);
+                q[item[0].formId] = q[item[0].formId] || '';
+                q[item[0].formId] += questionView; 
+            });
+            console.log(q);
+            var forms = _.groupBy(response.sub, function(el){ return el.formId });
+            var tpl = '';
+            _.each(forms, function(item, index, list){
+                item[0].questions = q[item[0].formId];
+                tpl += _.template(OZ.formView, item[0]);
+                
+            });
+            
+            var template = _.template(OZ.modal, { 
+                    modalId : 'submissionDetails',
+                    modalTitle : 'Submission Details',
+                    closeButton : true,
+                    closeButtonText : 'Close',
+                    doneButton : false,
+                    modalContent : tpl,
+                    size: 'large'
+                });
+
+        $(template).modal();
+        }
+        else
+        {
+            
+        }
+    }, 'json');
+});
+
+$(document).on('click', '.uploaded-img', function(){
+    var tpl = '<img class="img-thumbnail" style="width:100%;height:auto;" src="' + $(this).attr('src') + '" />';
+    var template = _.template(OZ.modal, { 
+                    modalId : 'imgPreview',
+                    modalTitle : 'Uploaded Image File',
+                    closeButton : true,
+                    closeButtonText : 'Close',
+                    doneButton : false,
+                    modalContent : tpl,
+                    size: 'medium'
+                });
+    $(template).modal();
+});
+
+function loadItemDetails(type, id, row)
+{
+    OZ.editingRow = id;
+    var count = $('td', $(row)).length;
+    $(row).after('<tr type="Detail" itemid="' + id + '" style="background:#fff;"><td colspan="' + count + '"><div class="well" style="height:0px;"><br/><br/><br/><br/><br/><br/></div></td><tr>');
+            TweenMax.to($('tr[type="Detail"][itemid="' + id + '"] .well'), 0.2, { height: 'auto', ease : Quart.EaseOut, onComplete: function(){  } });
+    
+    $.post(url('ajax/load-item-details'), { type : type, id : id }, function(response){
+        if(response.status)
+        {
+            $('tr[type="Detail"][itemid="' + id + '"] .well').html(_.template(OZ.detailsView, response.item));
+        }
+        else
+        {
+            
+        }
+    }, 'json');
+}
+
+function closeItemDetails(id)
+{   OZ.editingRow = null;
+    $('tr[type="Detail"][itemid="' + id + '"]').remove();
 }
