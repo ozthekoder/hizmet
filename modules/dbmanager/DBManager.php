@@ -24,11 +24,19 @@ class DBManager extends Module
                 1 => array(
                     'name' => 'Choice',
                     'key' => 'userId'
+                ),
+                2 => array(
+                    'name' => 'Permission',
+                    'key' => 'userId'
                 )
             ), 
             'Application' => array(
                 0 => array(
                     'name' => 'Form',
+                    'key' => 'appId'
+                ),
+                1 => array(
+                    'name' => 'Permission',
                     'key' => 'appId'
                 )
             ),
@@ -47,7 +55,7 @@ class DBManager extends Module
                     'name' => 'Choice',
                     'key' => 'questionId'
                 )
-            ) 
+            )
         );
     }
     
@@ -408,7 +416,7 @@ foreach($vars as $var)
             
             if($_SESSION['user']->accountType == ADMIN)
             {
-                $_SESSION['permissions'] = $this->select('CanModerate', array( 'userId' => $_SESSION['user']->id));
+                $_SESSION['permissions'] = $this->selectAll('Permission', array( 'userId' => $_SESSION['user']->id));
             }
             
             return $response;

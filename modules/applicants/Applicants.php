@@ -18,6 +18,8 @@ class Applicants extends Module
     
     public function load()
     {
+        if(!userExists())
+            EventManager::goToLoc ('home');
         $view = new View('applicants/templates/Applicants.view.php');
         $leftPanel = new View('admin/templates/LeftPanel.view.php');
         $row = new View('applicants/templates/ApplicantRow.view.php');
@@ -27,9 +29,7 @@ class Applicants extends Module
         $questionView = new View('panels/Question.view.php');
         $formView = new View('panels/Form.view.php');
         
-            $fedId = $_SESSION['permissions']->fedId;
-            $regionId = $_SESSION['permissions']->regionId;
-            if($regionId == 0 && $fedId == 0)
+            if($_SESSION['user']->accountType == SUPER_ADMIN)
             {
                 $applicants = EventManager::$db->query("SELECT * FROM User
                                                     left join (select id as nationId, fedId, `name` as nation from Nationality) as n
@@ -38,46 +38,40 @@ class Applicants extends Module
                                                     on n.fedId = f.fedId
                                                     left join (select id as stateId, short as state, regionId from State) as s
                                                     on User.state=s.stateId
-                                                    group by User.id;");
-            }
-            else if($regionId != 0 && $fedId == 0)
-            {
-                $applicants = EventManager::$db->query("SELECT * FROM User
-                                                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
-                                                    on User.nationality = n.nationId
-                                                    left join (select id as fedId, `name` as fedName from Federation) as f
-                                                    on n.fedId = f.fedId
-                                                    left join (select id as stateId, short as state, regionId from State) as s
-                                                    on User.state=s.stateId
-                                                    where s.regionId=$regionId
-                                                    group by User.id;");
-            }
-            else if($regionId == 0 && $fedId != 0)
-            {
-                $applicants = EventManager::$db->query("SELECT * FROM User
-                                                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
-                                                    on User.nationality = n.nationId
-                                                    left join (select id as fedId, `name` as fedName from Federation) as f
-                                                    on n.fedId = f.fedId
-                                                    left join (select id as stateId, short as state, regionId from State) as s
-                                                    on User.state=s.stateId
-                                                    where f.fedId=$fedId
                                                     group by User.id;");
             }
             else
             {
-                $applicants = EventManager::$db->query("SELECT * FROM User
-                                                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
-                                                    on User.nationality = n.nationId
-                                                    left join (select id as fedId, `name` as fedName from Federation) as f
-                                                    on n.fedId = f.fedId
-                                                    left join (select id as stateId, short as state, regionId from State) as s
-                                                    on User.state=s.stateId
-                                                    where s.regionId=$regionId and f.fedId=$fedId
-                                                    group by User.id;");
+                
+                $permissions = getPermissions('User', $_SESSION['user']->id);
+                $regionFilter = '';
+                $fedFilter = '';
+                foreach ($permissions['Federation'] as $i => $p)
+                {
+                    $or = '';
+                    if($i < count($permissions['Federation'])-1)
+                        $or = ' or ';
+                    $fedFilter .= 'f.fedId=' . $p->fedId . $or;
+                }
+                foreach ($permissions['Region'] as $i => $p)
+                {
+                    $or = '';
+                    if($i < count($permissions['Region'])-1)
+                        $or = ' or ';
+                    $regionFilter .= 's.regionId=' . $p->regionId . $or;
+                }
+                $sql = "SELECT * FROM User
+                        left join (select id as nationId, fedId, `name` as nation from Nationality) as n
+                        on User.nationality = n.nationId
+                        left join (select id as fedId, `name` as fedName from Federation) as f
+                        on n.fedId = f.fedId
+                        left join (select id as stateId, short as state, regionId from State) as s
+                        on User.state=s.stateId 
+                        where ($fedFilter) and ($regionFilter)
+                        group by User.id;";
+                $applicants = EventManager::$db->query($sql);
             }
             
-        
         $rows = '';
         
         foreach($applicants as $user)

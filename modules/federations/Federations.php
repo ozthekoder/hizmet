@@ -64,7 +64,7 @@ class Federations extends Module
             $rows .= $row->createHtml((array)$fed);
         }
         
-        $nats = EventManager::$db->query('SELECT * FROM hizmet.Nationality left join (select id as fedId, name as fedName from hizmet.Federation) as f on Nationality.fedId=f.fedId;');
+        $nats = EventManager::$db->query('SELECT * FROM hizmet.Nationality left join (select id as fedId, name as fedName from hizmet.Federation) as f on Nationality.fedId=f.fedId group by Nationality.id;');
         $this->setVar('federations', $feds);
         $this->setVar('nations', $nats);
         jsConfig('federations', $feds);

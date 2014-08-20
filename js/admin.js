@@ -842,7 +842,46 @@ function loadItemDetails(type, id, row)
     $.post(url('ajax/load-item-details'), { type : type, id : id }, function(response){
         if(response.status)
         {
+            OZ.response = response;
             $('tr[type="Detail"][itemid="' + id + '"] .well').html(_.template(OZ.detailsView, response.item));
+            $('.user-permission-select').multiselect({ 
+                maxHeight : 200,
+                buttonClass: 'btn btn-primary',
+                onChange : function(option, checked){
+                    if(option.val() === 'multiselect-all')
+                    {
+                        var params = {
+                            all : true,
+                            selected : _.pluck(option.parent().serializeArray(), 'value').splice(1),
+                            type : option.attr('type'),
+                            checked : checked,
+                            userId : option.attr('userId')
+                        };
+                    }
+                    else
+                    {
+                        var params = {
+                            all : false,
+                            selected : option.val(),
+                            type : option.attr('type'),
+                            checked : checked,
+                            userId : option.attr('userId')
+                        };
+                    }
+                    
+                    $.post(url('ajax/save-user-permission'), params, function(response){
+                        console.log(response);
+                        if(response.status)
+                        {
+                            
+                        }
+                        else
+                        {
+                            
+                        }
+                    }, 'json');
+                }
+            });
         }
         else
         {

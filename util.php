@@ -48,4 +48,30 @@ function addJSVars()
 
     return $includes;
 }
+
+function getPermissions($for, $id)
+{
+    switch($for)
+    {
+        case 'User':
+            $federationPermissions = EventManager::$db->query("select * from permission right join federation on permission.fedId=federation.id where userId=$id group by permission.id");
+            $regionPermissions = EventManager::$db->query("select * from permission right join region on permission.regionId=region.id where userId=$id group by permission.id");
+            $p = array(
+                'Federation' =>  $federationPermissions,
+                'Region' =>  $regionPermissions
+            );
+            break;
+        case 'Application':
+            $federationPermissions = EventManager::$db->query("select * from permission right join federation on permission.fedId=federation.id where appId=$id group by permission.id");
+            $regionPermissions = EventManager::$db->query("select * from permission right join region on permission.regionId=region.id where appId=$id group by permission.id");
+            $p = array(
+                'Federation' =>  $federationPermissions,
+                'Region' =>  $regionPermissions
+            );
+            break;
+    }
+//    var_dump($p);
+//    exit;
+    return $p;
+}
 ?>

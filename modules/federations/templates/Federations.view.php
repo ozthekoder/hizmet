@@ -66,7 +66,7 @@
                                                                <?php
                                                             foreach($federations as $fed) {
                                                             ?>
-                                                                <li fedid="<?= $fed->id ?>"><a href="#"><?= $fed->name ?></a></li>
+                                                                <li <?= is_null($nation['fedName']) ? '' : 'selected' ?> fedid="<?= $fed->id ?>"><a href="#"><?= $fed->name ?></a></li>
                                                             <?php 
                                                             } 
                                                             ?>
@@ -94,7 +94,6 @@
                         
                         <button data-toggle="modal" data-target="#addNewFederationModal" type="button" class="btn btn-default"><span class="icon-plus" style="margin-right: 5px;"></span>Add New Federation</button>
                         <button type="button" data-toggle="modal" data-target="#nationalityMappingsModal" class="btn btn-default"><span class="icon-earth" style="margin-right: 5px;"></span>Edit Nationality Mappings</button>
-                        <button id="edit-state-region-mappings" type="button" class="btn btn-default"><span class="icon-us-continental" style="margin-right: 5px;"></span>Edit State-Region Mappings</button>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                 <span class="icon-query" style="margin-right: 5px;"></span>

@@ -39,7 +39,7 @@
                             <tr id="<%= sub.id %>">
                                 <td><%= sub.name %></td>
                                 <td><%= sub.startDate %> - <%= sub.deadline %></td>
-                                <td><%= window.timeConverter(sub.submittedOn) %></td>
+                                <td><%= window.timeConverter(sub.lastEditedOn) %></td>
                             </tr>
                             <%
                         });

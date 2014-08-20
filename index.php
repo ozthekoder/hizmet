@@ -5,7 +5,7 @@ include_once('util.php');
 
 $eventManager = new EventManager();
 
-//EventManager::$db->createObjectClassFromTable('Upload');
+//EventManager::$db->createObjectClassFromTable('Permission');
 //$array = array(
 //    'email' => 'oozdemir2704@gmail.com',
 //    'password' => 'Kafa1500',

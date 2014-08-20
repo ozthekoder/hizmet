@@ -441,7 +441,7 @@ class EventManager
                         if($choiceId === "all")
                         {
                             $chosen = self::$post['chosen'];
-                            $actuallyChosen = self::$db->selectAll('Answer', array(
+                            $actuallyChosen = self::$db->delete('Answer', array(
                                 'questionId' => $questionId, 'userId' => $_SESSION['user']->id
                             ));
                             
@@ -482,7 +482,7 @@ class EventManager
                         if($choiceId === "all")
                         {
                             if(self::$db->delete('Answer', array(
-                                'questionId' => $questionId, 'userId' => $_SESSION['user']->id
+                                'questionId' => $questionId, 'userId' => $_SESSION['submission']->userId
                             )))
                             {
                                 $response = array(
@@ -493,7 +493,7 @@ class EventManager
                         else
                         {
                             if(self::$db->delete('Answer', array(
-                                'userId' => $questionId,
+                                'userId' => $_SESSION['submission']->userId,
                                 'choiceId' => $choiceId,
                                 'questionId' => $questionId
                             )))
@@ -678,6 +678,9 @@ class EventManager
 
                     }
                 }
+                
+                $_SESSION['submission']->lastEditedOn = time();
+                $_SESSION['submission']->save();
                 break;
             case 'submit-app':
                 if(isset($_SESSION['submission']) && !empty($_SESSION['submission']))
@@ -736,7 +739,7 @@ class EventManager
             case 'get-permissions':
                 $userId = self::$post['userId'];
                 $q =  "select * from Federation
-                    left join (select fedId, userId from CanModerate) as c on Federation.id = c.fedId
+                    left join (select fedId, userId from Permission) as c on Federation.id = c.fedId
                     left join (select id as uid from User where id=$userId) as u on c.userId = u.uid group by id";
                 $permissions = EventManager::$db->query($q);
                 $response = array(
@@ -753,7 +756,7 @@ class EventManager
                 
                 if($value == "true")
                 {
-                    if(self::$db->insert('CanModerate', array(
+                    if(self::$db->insert('Permission', array(
                         'userId' => $userId,
                         'fedId' => $fedId
                     )))
@@ -771,7 +774,7 @@ class EventManager
                 }
                 else
                 {
-                    $response['status'] = self::$db->delete('CanModerate', array(
+                    $response['status'] = self::$db->delete('Permission', array(
                         'userId' => $userId,
                         'fedId' => $fedId
                     ));
@@ -819,9 +822,8 @@ class EventManager
                                                     on s.regionId=r.regionId
                                                     where User.id=$id limit 1;")[0];
                         $item['submissions'] = self::$db->query("select * from
-                                                        Submission right join Application
-                                                        on Submission.appId = Application.id
-                                                        where Submission.userId=$id");
+                                                                Application left join Submission on Application.id=Submission.appId
+                                                                where userId=$id");
                         $response = array(
                             'status' => true,
                             'item' => $item
@@ -847,14 +849,35 @@ class EventManager
                             'item' => $item
                         );
                         break;
+                    case 'Moderator':
+                        $item = self::$db->query("SELECT * FROM User
+                                                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
+                                                    on User.nationality = n.nationId
+                                                    left join (select id as fedId, `name` as fedName from Federation) as f
+                                                    on n.fedId = f.fedId
+                                                    left join (select id as stateId, short as state, regionId from State) as s
+                                                    on User.state=s.stateId
+                                                    left join (select id as regionId, `name` as regionName from Region) as r
+                                                    on s.regionId=r.regionId
+                                                    where User.id=$id limit 1;")[0];
+                        $item['applications'] = self::$db->selectAll('Application', array( 'createdBy' => $id ));
+                        $item['myPermissions'] = getPermissions('User', $_SESSION['user']->id);
+                        $item['permissions'] = getPermissions('User', $id);
+                        $response = array(
+                            'status' => true,
+                            'item' => $item
+                        );
+                        break;
                 }
-                break;
-                    case 'load-submission':
+                        break;
+            case 'load-submission':
                         $id = self::$post['id'];
                         $answers = self::$db->query("select
 
                                                     Submission.id as id,
                                                     Submission.submittedOn as submittedOn,
+                                                    Submission.lastEditedOn as lastEditedOn,
+                                                    Submission.userId as userId,
                                                     Application.id as appId, 
                                                     Application.name as appName, 
                                                     Application.startDate as startDate,
@@ -879,7 +902,7 @@ class EventManager
                                                     Answer left join
                                                     Choice
                                                     on Choice.questionId=Answer.questionId and Answer.choiceId=Choice.id 
-                                                    on Question.id=Answer.questionId 
+                                                    on Question.id=Answer.questionId and Answer.userId=userId
                                                     on Form.id=Question.formId 
                                                     on Application.id=Form.appId 
                                                     on Application.id=Submission.appId 
@@ -901,7 +924,60 @@ class EventManager
                         
                         
                         
+                break;
+                    case 'save-user-permission':
+                        $selected = self::$post['selected'];
+                        $type = self::$post['type'];
+                        $userId = self::$post['userId'];
+                        $checked = self::$post['checked'];
+                        $all = self::$post['all'];
+                        if($type == 'fedId') $other = 'regionId';
+                        else if($type == 'regionId') $other = 'fedId';
+                        
+                        if($checked == "true")
+                        {
+                            if($all == "true")
+                            {
+                                self::$db->query("delete from Permission where userId=$userId and $type!=0");
+                                foreach ($selected as $s)
+                                {
+                                    self::$db->insert('Permission', array(
+                                        'userId' => $userId,
+                                        $type => $s
+                                    ));
+                                }
+                            }
+                            else
+                            {
+                                self::$db->insert('Permission', array(
+                                        'userId' => $userId,
+                                        $type => $selected
+                                    ));
+                            }
+                            
+                                
+                        }
+                        else
+                        {
+                            if($all == "true")
+                            {
+                                self::$db->query("delete from Permission where userId=$userId and $type!=0");
+                            }
+                            else
+                            {
+                                self::$db->delete('Permission', array(
+                                    'userId' => $userId,
+                                    $type => $selected
+                                ));
+                            }
+                        }
+                        
+                        $response = array(
+                            'status' => true,
+                            'message' => 'Permissions successfully updated.'
+                        );
                         break;
+            
         }
         echo json_encode($response, JSON_NUMERIC_CHECK);
         exit;
