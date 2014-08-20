@@ -872,6 +872,7 @@ class EventManager
                         break;
             case 'load-submission':
                         $id = self::$post['id'];
+                        $userId = self::$post['userId'];
                         $answers = self::$db->query("select
 
                                                     Submission.id as id,
@@ -902,7 +903,7 @@ class EventManager
                                                     Answer left join
                                                     Choice
                                                     on Choice.questionId=Answer.questionId and Answer.choiceId=Choice.id 
-                                                    on Question.id=Answer.questionId and Answer.userId=userId
+                                                    on Question.id=Answer.questionId and Answer.userId=$userId
                                                     on Form.id=Question.formId 
                                                     on Application.id=Form.appId 
                                                     on Application.id=Submission.appId 

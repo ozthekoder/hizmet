@@ -750,7 +750,8 @@ $(document).on('click', '#items-table > tbody > tr:not([type="Detail"])', functi
 
 $(document).on('click', '#detail-submissions-table tr', function(){
     var id = parseInt($(this).attr('id'));
-    $.post(url('ajax/load-submission'), { id : id }, function(response){
+    var userId = parseInt($(this).attr('userId'));
+    $.post(url('ajax/load-submission'), { id : id, userId : userId }, function(response){
         console.log(response);
         var questions = _.groupBy(response.sub, function(item){ return item.questionId });
         OZ.foo = response.sub;

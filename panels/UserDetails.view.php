@@ -36,7 +36,7 @@
                         <%
                         _.each(submissions, function(sub,index,list){
                             %>
-                            <tr id="<%= sub.id %>">
+                            <tr id="<%= sub.id %>" userId="<%= id %>">
                                 <td><%= sub.name %></td>
                                 <td><%= sub.startDate %> - <%= sub.deadline %></td>
                                 <td><%= window.timeConverter(sub.lastEditedOn) %></td>
