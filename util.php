@@ -54,16 +54,16 @@ function getPermissions($for, $id)
     switch($for)
     {
         case 'User':
-            $federationPermissions = EventManager::$db->query("select * from permission right join federation on permission.fedId=federation.id where userId=$id group by permission.id");
-            $regionPermissions = EventManager::$db->query("select * from permission right join region on permission.regionId=region.id where userId=$id group by permission.id");
+            $federationPermissions = EventManager::$db->query("select * from Permission right join Federation on Permission.fedId=Federation.id where userId=$id group by Permission.id");
+            $regionPermissions = EventManager::$db->query("select * from Permission right join Region on Permission.regionId=Region.id where userId=$id group by Permission.id");
             $p = array(
                 'Federation' =>  $federationPermissions,
                 'Region' =>  $regionPermissions
             );
             break;
         case 'Application':
-            $federationPermissions = EventManager::$db->query("select * from permission right join federation on permission.fedId=federation.id where appId=$id group by permission.id");
-            $regionPermissions = EventManager::$db->query("select * from permission right join region on permission.regionId=region.id where appId=$id group by permission.id");
+            $federationPermissions = EventManager::$db->query("select * from Permission right join Federation on Permission.fedId=Federation.id where appId=$id group by Permission.id");
+            $regionPermissions = EventManager::$db->query("select * from Permission right join Region on Permission.regionId=Region.id where appId=$id group by Permission.id");
             $p = array(
                 'Federation' =>  $federationPermissions,
                 'Region' =>  $regionPermissions
