@@ -380,6 +380,28 @@ class EventManager
                         }
                         $i++;
                     }
+                    
+                    $permissions = self::$db->select('Permission', array( 'appId' => $app->id ));
+                    if(!$permissions)
+                    {
+                        $permissions = getPermissions('User', $_SESSION['user']->id);
+                        foreach ($permissions['Federation'] as $p)
+                        {
+                            self::$db->insert('Permission', array(
+                                'appId' => $app->id,
+                                'fedId' => $p['fedId']
+                            ));
+                        }
+
+                        foreach ($permissions['Region'] as $p)
+                        {
+                            self::$db->insert('Permission', array(
+                                'appId' => $app->id,
+                                'regionId' => $p['regionId']
+                            ));
+                        }
+                    }
+                        
                 }
                 else
                 {
@@ -830,23 +852,52 @@ class EventManager
                         );
                         break;
                     case 'Application':
-                        $item = self::$db->query("SELECT * FROM User
-                                                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
-                                                    on User.nationality = n.nationId
-                                                    left join (select id as fedId, `name` as fedName from Federation) as f
-                                                    on n.fedId = f.fedId
-                                                    left join (select id as stateId, short as state, regionId from State) as s
-                                                    on User.state=s.stateId
-                                                    left join (select id as regionId, `name` as regionName from Region) as r
-                                                    on s.regionId=r.regionId
-                                                    where User.id=$id limit 1;")[0];
-                        $item['submissions'] = self::$db->query("select * from
-                                                        Submission right join Application
-                                                        on Submission.appId = Application.id
-                                                        where Submission.userId=$id");
+                        $app = self::$db->query("select 
+                                                Application.id as id,
+                                                Application.`name` as appName,
+                                                Application.createdBy as createdBy,
+                                                Application.lastEditedOn as lastEditedOn,
+                                                Application.startDate as startDate,
+                                                Application.deadline as deadline,
+                                                Application.`status` as `status`,
+                                                concat(User.firstName , ' ', User.lastName) as `name`,
+                                                User.id as userId,
+                                                User.avatar as modAvatar
+                                                from Application
+                                                inner join User on Application.createdBy = User.id
+                                                where Application.id=$id
+                                                group by Application.id;")[0];
+                        $permissions = getPermissions('User', $_SESSION['user']->id);
+                        $appPermissions = getPermissions('Application', $id);
+                        
+                        $regionFilter = ''; 
+                        $fedFilter = '';
+                        foreach ($permissions['Federation'] as $i => $p)
+                        {
+                            $or = ' ';
+                            if($i < count($permissions['Federation'])-1)
+                                $or = ' or ';
+                            $fedFilter .= 'Nationality.fedId=' . $p['fedId'] . $or;
+                        }
+                        foreach ($permissions['Region'] as $i => $p)
+                        {
+                            $or = ' ';
+                            if($i < count($permissions['Region'])-1)
+                                $or = ' or ';
+                            $regionFilter .= 'State.regionId=' . $p['regionId'] . $or;
+                        }
+                        
+                        $sql = "select * from User
+                                inner join Nationality on User.nationality=Nationality.id
+                                inner join State on User.state=State.id
+                                inner join Submission on Submission.userId=User.id
+                                where Submission.appId=$id && ( $regionFilter ) && ( $fedFilter ) group by User.id;";
+                        $app['submissions'] = self::$db->query($sql);
+                        $app['permissions'] = $appPermissions;
+                        $app['myPermissions'] = $permissions;
                         $response = array(
                             'status' => true,
-                            'item' => $item
+                            'item' => $app
                         );
                         break;
                     case 'Moderator':
@@ -977,6 +1028,61 @@ class EventManager
                             'status' => true,
                             'message' => 'Permissions successfully updated.'
                         );
+                        break;
+                    case 'save-app-permission':
+                        $selected = self::$post['selected'];
+                        $type = self::$post['type'];
+                        $appId = self::$post['appId'];
+                        $checked = self::$post['checked'];
+                        $all = self::$post['all'];
+                        if($type == 'fedId') $other = 'regionId';
+                        else if($type == 'regionId') $other = 'fedId';
+                        
+                        if($checked == "true")
+                        {
+                            if($all == "true")
+                            {
+                                self::$db->query("delete from Permission where appId=$appId and $type!=0");
+                                foreach ($selected as $s)
+                                {
+                                    self::$db->insert('Permission', array(
+                                        'appId' => $appId,
+                                        $type => $s
+                                    ));
+                                }
+                            }
+                            else
+                            {
+                                self::$db->insert('Permission', array(
+                                        'appId' => $appId,
+                                        $type => $selected
+                                    ));
+                            }
+                            
+                                
+                        }
+                        else
+                        {
+                            if($all == "true")
+                            {
+                                self::$db->query("delete from Permission where appId=$appId and $type!=0");
+                            }
+                            else
+                            {
+                                self::$db->delete('Permission', array(
+                                    'appId' => $appId,
+                                    $type => $selected
+                                ));
+                            }
+                        }
+                        
+                        $response = array(
+                            'status' => true,
+                            'message' => 'Permissions successfully updated.'
+                        );
+                        break;
+                    case 'get-excel-for-apps':
+                        header("Content-Type: text/plain");
                         break;
             
         }

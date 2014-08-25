@@ -1,4 +1,4 @@
-<table id="items-table" class="table table-responsive">
+<table id="items-table table-hover" class="table table-responsive">
     <thead>
         <tr style="white-space: nowrap;">
             <th>Id</th>

@@ -10,10 +10,10 @@
               </div>
               <div class="modal-footer">
                   <% if(closeButton){ %>
-                      <button type="button" id="modalCancel" class="btn btn-default" data-dismiss="modal"><%= closeButtonText %></button>
+                      <button type="button" id="" class="btn btn-default modalCancel" data-dismiss="modal"><%= closeButtonText %></button>
                   <% } %>
                   <% if(doneButton){ %>
-                      <button type="button" id="modalDone" class="btn btn-primary"><%= doneButtonText %></button>
+                      <button type="button" id="" class="btn btn-primary modalDone"><%= doneButtonText %></button>
                   <% } %>
                     
               </div>

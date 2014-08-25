@@ -74,4 +74,25 @@ function getPermissions($for, $id)
 //    exit;
     return $p;
 }
+
+function cleanData( &$str ) {
+    $str = preg_replace( "/\t/", "\\t", $str );
+    $str = preg_replace("/\r?\n/", "\\n", $str);
+}
+function excelize($data)
+{
+    $flag = false;
+    foreach( $data as $row ) {
+        if( !$flag ) {
+            // display field/column names as first row
+            echo implode( "\t", array_keys( $row ) ) . "\r\n";
+            $flag = true;
+        }
+        array_walk( $row, 'cleanData' );
+        return implode( "\t", array_values( $row ) ) . "\r\n";
+    }
+}
+                        
+                        
+
 ?>

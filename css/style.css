@@ -185,11 +185,6 @@ ul.scroll-menu-2x {
     white-space: nowrap;
 }
 
-#items-table tbody tr:hover
-{
-    background: #fff;
-}
-
 .outer-box
 {
     height: 400px;

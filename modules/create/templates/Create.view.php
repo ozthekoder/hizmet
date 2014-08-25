@@ -19,7 +19,7 @@
                 <input type="text" class="input form-control input-sm" value="<?= $application['deadline'] ?>" name="deadline">
             </div>
             <button id="toggleStatus" status="<?= $application['status'] ?>" style="float:left;margin-top:15px;margin-left: 10px;" class="btn btn-primary btn-sm"><?php if($application['status']) echo 'Deactivate'; else echo 'Activate'; ?></button>
-            <span title="Add New Form" data-toggle="modal" data-target="#createNewFormModal" style="font-size:24px;margin-left: 10px;margin-top: 18px;float: left;" class="create-new-form icon-plus trans-all"></span>
+            <span title="Add New Form" style="font-size:24px;margin-left: 10px;margin-top: 18px;float: left;" class="create-new-form icon-plus trans-all"></span>
         </div>
         <div class="container-fluid" style="height: 388px;overflow: auto;background: #f9f9f9;" id="forms-panel">
             <div style="padding-top: 15px;">

@@ -29,6 +29,7 @@ class Applicants extends Module
         $questionView = new View('panels/Question.view.php');
         $formView = new View('panels/Form.view.php');
         
+        
             if($_SESSION['user']->accountType == SUPER_ADMIN)
             {
                 $applicants = EventManager::$db->query("SELECT * FROM User
@@ -80,8 +81,9 @@ class Applicants extends Module
         }
         
         jsConfig('detailsView', $detailsView->createHTML());
-        jsConfig('questionView', $questionView->createHTML());
-        jsConfig('formView', $formView->createHTML());
+        jsConfig('questionSubView', $questionView->createHTML());
+        jsConfig('formSubView', $formView->createHTML());
+        
         $this->setVar('leftPanel', $leftPanel->createHTML());
         $this->setVar('table', $table->createHTML(array('rows' => $rows)));
         $this->setVar('applicants', $applicants);

@@ -19,7 +19,7 @@ class Create extends Module
     public function load()
     {
         
-        $appId = EventManager::$params[1];
+        $appId = EventManager::$post['id'];
         if($appId !== 'new')
         {
             $app = EventManager::$db->query("select 
@@ -53,21 +53,19 @@ class Create extends Module
                 'startDate' => $app[0]['startDate'],
                 'deadline' => $app[0]['deadline'],
                 'createdBy' => $app[0]['createdBy'],
-                'status' => $app[0]['status'],
-                'app' => ''
+                'status' => $app[0]['status']
             );
         }
         else
         {
             $application = array(
-            'id' => 0,
-            'name' => '',
-            'startDate' => '',
-            'deadline' => '',
-            'createdBy' => $_SESSION['user']->id,
-            'status' => 0,
-            'app' => ''
-        );
+                'id' => 0,
+                'name' => '',
+                'startDate' => '',
+                'deadline' => '',
+                'createdBy' => $_SESSION['user']->id,
+                'status' => 0
+            );
         }
         $view = new View('create/templates/Create.view.php');
         $formView = new View('create/templates/Form.view.php');
@@ -79,46 +77,95 @@ class Create extends Module
         $selected = array();
         $questions = array();
         $forms = array();
-        foreach($app as $c)
-        {
-            if(!is_null($c['questionId']))
-                $choices[$c['questionId']] .= $choiceView->createHTML($c);
-        }
         
-        foreach($app as $q)
+        $foo = array();
+        $foo['forms'] = __::groupBy($app, 'formId');
+        $i = 0;
+        foreach($foo['forms'] as $form)
         {
-            if(isset($choices[$q['questionId']]) && !empty($choices[$q['questionId']]))
+            $forms[$i] = array(
+                    'id' => $form[0]['formId'],
+                    'name' => $form[0]['formName'],
+                    'order' => $form[0]['formOrder'],
+                    'questions' => array()
+                );
+            $foo['questions'] = __::groupBy($form, 'questionId');
+            $j = 0;
+            foreach($foo['questions'] as $question)
             {
-                $q['choices'] = $choices[$q['questionId']];
-                $q['hasSelected'] = $selected[$q['questionId']];
-                $questions[$q['formId']] .= $questionView->createHTML($q);
-                unset($q['choices']);
-                unset($choices[$q['questionId']]);
+                $forms[$i]['questions'][$j] = array(
+                        'id' => $question[0]['questionId'],
+                        'question' => $question[0]['question'],
+                        'order' => $question[0]['questionOrder'],
+                        'type' => $question[0]['questionType'],
+                        'choices' => array()
+                    );
+                $foo['choices'] = __::groupBy($question, 'choiceId');
+                
+                $k = 0;
+                foreach($foo['choices'] as $choice)
+                {
+                    $forms[$i]['questions'][$j]['choices'][] = array(
+                            'id' => $choice['choiceId'],
+                            'choice' => $choice['choice']
+                        );
+                    $k++;
+                }
+                
+                $j++;
             }
-        }
-        $leftInfo = array();
-        foreach($app as $f)
-        {
-            if(isset($questions[$f['formId']]) && !empty($questions[$f['formId']]))
-            {
-                $f['questions'] = $questions[$f['formId']];
-                $forms[$f['formId']] .= $formView->createHTML($f);
-                $leftInfo[$f['formId']] = $f;
-                unset($f['questions']);
-                unset($questions[$f['formId']]);
-            }
-        }
-        
-        foreach($forms as $form)
-        {
             
-            $application['app'] .= $form;
+            $i++;
         }
-        $application['forms'] = $leftInfo;
-        $this->setVar('application', $application);
-        $this->setView($view);  
+//        foreach($app as $c)
+//        {
+//            if(!is_null($c['questionId']))
+//            {
+//                if(!isset($choices[$c['choiceId']])) 
+//                    $choices[$c['questionId']] = array();
+//                $choices[$c['questionId']][] = array(
+//                    'id' => $c['choiceId'],
+//                    'choice' => $c['choice']
+//                );
+//            }
+//                
+//        }
+//        
+//        foreach($app as $q)
+//        {
+//            if(!isset($questions[$q['formId']])) 
+//                $questions[$q['formId']] = array();
+//            $question = array(
+//                'id' => $q['questionId'],
+//                'question' => $q['question'],
+//                'order' => $q['questionOrder'],
+//                'type' => $q['questionType']
+//            );
+//            if(isset($choices[$q['questionId']]) && !empty($choices[$q['questionId']]))
+//            {
+//                $question['choices'] = $choices[$q['questionId']];
+//                unset($choices[$q['questionId']]);
+//            }
+//            $questions[$q['formId']][] = $question;
+//        }
+//        $i = 0;
+//        foreach($app as $f)
+//        {
+//            if(isset($questions[$f['formId']]) && !empty($questions[$f['formId']]))
+//            {
+//                $forms[$i] = array(
+//                    'id' => $f['formId'],
+//                    'name' => $f['formName'],
+//                    'order' => $f['formOrder'],
+//                    'questions' => $questions[$f['formId']]
+//                );
+//                $i++;
+//                unset($questions[$f['formId']]);
+//            }
+//        }
+        $application['forms'] = $forms;
         
-        echo $this->createHTML();
+        echo json_encode($application, JSON_NUMERIC_CHECK);
     }
     
     

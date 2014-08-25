@@ -1,12 +1,18 @@
-OZ.application = {
-    id: 0,
-    name: '',
-    createdBy : OZ.user.id,
-    startDate : '',
-    deadline : '',
-    forms : []
-};
+
 $(document).ready(function(){
+    
+    OZ.appTpl = _.template(OZ.appView);
+    
+    OZ.application = {
+        id: 0,
+        name: '',
+        createdBy : OZ.user.id,
+        startDate : '',
+        deadline : '',
+        forms : [],
+        formTpl : _.template(OZ.formView)
+    };
+    
     $('#sidebar').affix({
         offset: {
           top: 50
@@ -21,15 +27,35 @@ $body.scrollspy({
 	offset: 10
 });
 
-$(document).on('click', '#save-app', function(){
+$(document).on('click', '[modalid="createNewAppModal"] .modalDone', function(e){
+    e.preventDefault();
     var sanity = checkAppSanity(OZ.application);
     if(sanity.status)
     {
-        $.post(url('ajax/create-app'), OZ.application, function(response){
+        
+        var params = _.omit(OZ.application, ['formTpl']);
+        
+        _.each(params.forms, function(form, i, list){
+            params.forms[i] = _.omit(form, ['questionTpl']);
+            
+            _.each(form.questions, function(question, j, clist){ 
+                params.forms[i].questions[j] = _.omit(question, ['choiceTpl']);
+            });
+        });
+        $.post(url('ajax/create-app'), params, function(response){
             if(response.status)
             {
-                OZ.application = response.app;
-                layoutForms();
+                var newApp = OZ.application.id === 0;
+                _.extend(OZ.application, response.app);
+                var app = _.omit(OZ.application, ['formTpl', 'forms']);
+                if(newApp)
+                {
+                    $('#items-table tbody').append(_.template(OZ.rowView, app));
+                }
+                else
+                {
+                    $('#items-table tbody tr[itemid="' + OZ.application.id + '"]').replaceWith(_.template(OZ.rowView, app));
+                }
             }
 
             alert(response.message);
@@ -46,11 +72,11 @@ $(document).on('hidden.bs.modal', '.generalModal', function(){
     $(this).remove();
 });
 
-$(document).on('click', '#modalDone', function(){
+$(document).on('click', '.modalDone', function(){
     $(this).closest('.modal').modal('hide');
 });
 
-$(document).on('click', '#modalCancel', function(){
+$(document).on('click', '.modalCancel', function(){
     $(this).closest('.modal').modal('hide');
 });
 
@@ -94,7 +120,7 @@ $(document).on('click', '#add-new-federation', function(){
     }
 });
 
-$(document).on('click', '#add-new-form', function(){
+$(document).on('click', '[modalid="createNewFormModal"] .modalDone', function(e){
     var name = $('#form-name').val();
     var order = OZ.application.forms.length+1;
     if(name === '')
@@ -102,108 +128,86 @@ $(document).on('click', '#add-new-form', function(){
         alert('Please enter a name for the form.')
         return false;
     }
-    var form = _.template(OZ.formView, { id : 0, order : order, name : name, questions: [] });
     
-    $('#forms-panel > div').append(form);
-    var num = order;
-    $('#forms-list').append('<li class="nav-list-item" order="' + order + '"><a href="#form-' + order + '">' + num + ') ' + name + '</a></li>');
     OZ.application.forms.push({ 
         id : 0,
         order : order, 
         name : name,
-        questions: []
+        questions: [],
+        questionTpl : _.template(OZ.questionView)
     });
-    $('#form-' + order + ' .form-action').each(function(){
-        $(this).tooltip({
-            placement : 'bottom'
-        });
-    });
-    $('#form-name').val('');
-    $('#createNewFormModal').modal('hide');
+    layoutForms();
 });
 
-$(document).on('show.bs.modal', '#addNewQuestionModal', function(e){
-    OZ.currentForm = OZ.application.forms[parseInt($(e.relatedTarget).closest('.oz-form').attr('order')) - 1];
-});
 
 $(document).on('click', '#create-new-app', function(e){
-    OZ.application = {
-        id : 0,
-        name: '',
-        createdBy : OZ.user.id,
-        startDate : '',
-        deadline : '',
-        forms : []
-    };
     
-    OZ.currentForm = null;
-    $.ajax({
-        url: url('create/new'),
-        type: "POST",
-        dataType: "html",
-        timeout: 10000,
-        statusCode: {
-            404: function() {
-                serverb();
-            }
-        },
-        success: function(response) {
-            $('#createNewAppModal .modal-body').html(response);
-            $('#createNewAppModal .modal-body select').multiselect({ 
-                maxHeight : 200,
-                buttonClass: 'btn btn-primary'
-            });
-            $('#createNewAppModal .modal-body .form-action, .create-new-form, .question-action').each(function(){
-                $(this).tooltip({
-                    placement : 'bottom'
-                });
-            });
-            $('#sidebar').affix({
-                offset: {
-                  top: 50
-                }
-            });
-            $('#forms-panel').scrollspy({
-                    target: '#forms-sidebar',
-                    offset: 10
-            });
-            $('#datepicker').datepicker();
-            var data = $('#createNewAppModal .creation-modal-content').data();
+    if(OZ.application.forms.length > 0 || OZ.application.name !== '' || OZ.application.deadline !== '' || OZ.application.startDate !== '')
+    {
+        var r = confirm('Would you like to continue from where you left off?');
+        if(!r){
             OZ.application = {
-                id: data.id,
-                name: data.name,
+                id : 0,
+                name: '',
                 createdBy : OZ.user.id,
-                startDate : data.startdate,
-                deadline : data.deadline
+                startDate : '',
+                deadline : '',
+                forms : [],
+                formTpl : _.template(OZ.formView)
             };
-            
-            OZ.application.forms = [];
-            var f=0,q=0,c=0;
-            $('.oz-form').each(function(){
-                OZ.application.forms.push($(this).data());
-                OZ.application.forms[f].questions = [];
-                q=0;
-                $('.oz-question', $(this)).each(function(){
-                    OZ.application.forms[f].questions.push($(this).data());
-                    OZ.application.forms[f].questions[q].choices = [];
-                    c=0;
-                    $('.oz-choice', $(this)).each(function(){
-                        OZ.application.forms[f].questions[q].choices.push($(this).data());
-                        c++;
-                    });
-                    q++;
-                });
-                f++;
-            });
-            
-        },
-        error: function(x, t, m) {
-            if (t === "timeout") {
-            } else {
-            }
         }
-    });
-    
+
+        OZ.currentForm = null;
+
+
+
+
+        var template = _.template(OZ.modal, { 
+                        modalId : 'createNewAppModal',
+                        modalTitle : 'Create Application',
+                        closeButton : true,
+                        closeButtonText : 'Close',
+                        doneButton : true,
+                        doneButtonText : 'Save',
+                        size: 'large',
+                        modalContent : ''
+                    });
+
+        $(template).modal();
+
+        layoutForms();
+    }
+    else
+    {
+        OZ.application = {
+            id : 0,
+            name: '',
+            createdBy : OZ.user.id,
+            startDate : '',
+            deadline : '',
+            forms : [],
+            formTpl : _.template(OZ.formView)
+        };
+        OZ.currentForm = null;
+        var template = _.template(OZ.modal, { 
+                            modalId : 'createNewAppModal',
+                            modalTitle : 'Create Application',
+                            closeButton : true,
+                            closeButtonText : 'Close',
+                            doneButton : true,
+                            doneButtonText : 'Save',
+                            size: 'large',
+                            modalContent : ''
+                        });
+
+        $(template).modal();
+        
+        layoutForms();
+    }
+});
+
+$(document).on('shown.bs.modal', '[modalid="createNewAppModal"]', function(e){
+    layoutForms();
 });
 
 $(document).on('click', '.remove-form', function(){
@@ -223,6 +227,7 @@ $(document).on('click', '.remove-form', function(){
                 if(response.status)
                 {
                     OZ.application = response.app;
+                    OZ.application.formTpl = _.template(OZ.formView);
                     layoutForms();
                 }
                 alert(response.message);
@@ -252,6 +257,7 @@ $(document).on('click', '.remove-question', function(){
                 if(response.status)
                 {
                     OZ.application = response.app;
+                    OZ.application.formTpl = _.template(OZ.formView);
                     layoutForms();
                 }
                 alert(response.message);
@@ -306,7 +312,7 @@ $(document).on('click', '.remove-choice', function(){
     
 });
 
-$(document).on('click', '#add-new-question', function(){
+$(document).on('click', '[modalid="createNewQuestionModal"] .modalDone', function(){
     var parent = $(this).closest('.modal');
     var text = $('#question-text').val();
     var type = parseInt($('#question-type').siblings('button').val());
@@ -343,21 +349,12 @@ $(document).on('click', '#add-new-question', function(){
         order : OZ.currentForm.questions.length+1,
         type : type,
         question : text,
-        choices : choices || []
+        choices : choices || [],
+        choiceTpl : _.template(OZ.choiceView)
     };
     OZ.currentForm.questions.push(question);
     
     layoutForms();
-    $('input', parent).val('');
-    $('.oz-dropdown', parent).find('button').html('<span class="selected-type">Short Answer</span><span class="caret" style="margin-left: 2px;"></span>').val(0);
-    
-    if(type === 4 || type === 5)
-    {
-        $('input[type="file"]').fileinput();
-    }
-    
-    $('.well, #add-choice-input', parent).remove();
-    parent.modal('hide');
     
 });
 
@@ -405,7 +402,7 @@ $(document).on('click', '#add-new-region', function(){
         
 });
 
-$(document).on('click', '[modalid="addNewRegionModal"] #modalDone', function(){
+$(document).on('click', '[modalid="addNewRegionModal"] .modalDone', function(){
     var modal = $(this).closest('.modal');
     var params = $('input', modal).serializeArray();
     
@@ -428,6 +425,37 @@ $(document).on('click', '[modalid="addNewRegionModal"] #modalDone', function(){
         html += '</tr>';
         $('#items-table tbody').append(html);
     }, 'json');
+});
+
+$(document).on('click', '.create-new-form', function(){
+    var template = _.template(OZ.modal, { 
+                    modalId : 'createNewFormModal',
+                    modalTitle : 'Add New Form',
+                    closeButton : true,
+                    closeButtonText : 'Close',
+                    doneButton : true,
+                    doneButtonText : 'Add',
+                    size: 'medium',
+                    modalContent : OZ.createFormView
+                });
+    $(template).modal();
+});
+
+$(document).on('click', '.add-question', function(){
+    
+    OZ.currentForm = OZ.application.forms[parseInt($(this).attr('order')) - 1];
+    
+    var template = _.template(OZ.modal, { 
+                    modalId : 'createNewQuestionModal',
+                    modalTitle : 'Add New Question',
+                    closeButton : true,
+                    closeButtonText : 'Close',
+                    doneButton : true,
+                    doneButtonText : 'Add',
+                    size: 'medium',
+                    modalContent : OZ.createQuestionView
+                });
+    $(template).modal();
 });
 
 $(document).on('click', '#edit-state-region-mappings', function(){
@@ -504,75 +532,29 @@ $(document).on('click', '.edit-item', function(e){
     var id = row.find('.id-holder').text();
     var type = row.attr('type');
     
-    $.ajax({
-        url: url('create/' + id),
-        type: "POST",
-        dataType: "html",
-        timeout: 10000,
-        statusCode: {
-            404: function() {
-                serverb();
-            }
-        },
-        success: function(response) {
-            $('#createNewAppModal .modal-body').html(response);
-            $('#createNewAppModal').modal('show');
-            $('#createNewAppModal .modal-body select').multiselect({ 
-                maxHeight : 200,
-                buttonClass: 'btn btn-primary'
-            });
-            $('#createNewAppModal .modal-body .form-action, .create-new-form, .question-action').each(function(){
-                $(this).tooltip({
-                    placement : 'bottom'
+    $.post(url('create'),{ id : id }, function(response) {
+            OZ.application = response;
+            OZ.application.formTpl = _.template(OZ.formView);
+            _.each(OZ.application.forms, function(form, i, fl){
+                OZ.application.forms[i].questionTpl = _.template(OZ.questionView);
+                _.each(form.questions, function(question, j, ql){
+                    OZ.application.forms[i].questions[j].choiceTpl = _.template(OZ.choiceView);
                 });
             });
-            $('#sidebar').affix({
-                offset: {
-                  top: 50
-                }
-            });
-            $('#forms-panel').scrollspy({
-                    target: '#forms-sidebar',
-                    offset: 10
-            });
-            $('#datepicker').datepicker();
-            $('input[type="file"]').fileinput();
-            var data = $('#createNewAppModal .creation-modal-content').data();
-            
-            OZ.application = {
-                id: data.id,
-                name: data.name,
-                createdBy : OZ.user.id,
-                startDate : data.startdate,
-                deadline : data.deadline
-            };
-            
-            OZ.application.forms = [];
-            var f=0,q=0,c=0;
-            $('.oz-form').each(function(){
-                OZ.application.forms.push($(this).data());
-                OZ.application.forms[f].questions = [];
-                q=0;
-                $('.oz-question', $(this)).each(function(){
-                    OZ.application.forms[f].questions.push($(this).data());
-                    OZ.application.forms[f].questions[q].choices = [];
-                    c=0;
-                    $('.oz-choice', $(this)).each(function(){
-                        OZ.application.forms[f].questions[q].choices.push($(this).data());
-                        c++;
-                    });
-                    q++;
+            var template = _.template(OZ.modal, { 
+                    modalId : 'createNewAppModal',
+                    modalTitle : 'Create Application',
+                    closeButton : true,
+                    closeButtonText : 'Close',
+                    doneButton : true,
+                    doneButtonText : 'Save',
+                    size: 'large',
+                    modalContent : ''
                 });
-                f++;
-            });
-            
-        },
-        error: function(x, t, m) {
-            if (t === "timeout") {
-            } else {
-            }
-        }
-    });
+
+            $(template).modal();
+            layoutForms();
+        },'json');
 });
 
 $(document).on('click', '#region-mapping-selection li', function(){
@@ -703,34 +685,27 @@ function checkAppSanity(app){
 function layoutForms()
 {
     var forms = '';
-    $('#forms-list').empty();
-    _.each(OZ.application.forms, function(form, i, formsList){ 
-        $('#forms-list').append('<li class="nav-list-item" order="' + form.order + '"><a href="#form-' + form.order + '">' + (parseInt(form.order)) + ') ' + form.name + '</a></li>');
-        forms += _.template(OZ.formView, form);
-        
+    $('[modalid="createNewAppModal"] .modal-body').html(OZ.appTpl(OZ.application));
+    $('[modalid="createNewAppModal"] .modal-body select').multiselect({ 
+        maxHeight : 200,
+        buttonClass: 'btn btn-primary'
     });
-    $('#forms-panel > div').html(forms);
-    $('#createNewAppModal .modal-body select').multiselect({ 
-                maxHeight : 200,
-                buttonClass: 'btn btn-primary'
-            });
-            $('#createNewAppModal .modal-body .form-action, .create-new-form, .question-action').each(function(){
-                $(this).tooltip({
-                    placement : 'bottom'
-                });
-            });
-            $('#sidebar').affix({
-                offset: {
-                  top: 50
-                }
-            });
-            $('#forms-panel').scrollspy({
-                    target: '#forms-sidebar',
-                    offset: 10
-            });
-            $('#datepicker').datepicker();
-            $('input[type="file"]').fileinput();
-    
+    $('[modalid="createNewAppModal"] .modal-body .form-action, .create-new-form, .question-action').each(function(){
+        $(this).tooltip({
+            placement : 'bottom'
+        });
+    });
+    $('#sidebar').affix({
+        offset: {
+          top: 50
+        }
+    });
+    $('#forms-panel').scrollspy({
+            target: '#forms-sidebar',
+            offset: 10
+    });
+    $('#datepicker').datepicker();
+    $('input[type="file"]').fileinput();
 }
 
 $(document).on('click', '#items-table > tbody > tr:not([type="Detail"])', function(){
@@ -787,7 +762,7 @@ $(document).on('click', '#detail-submissions-table tr', function(){
                     item[0].files = concat;
                 }
                 
-                var questionView = _.template(OZ.questionView, item[0]);
+                var questionView = _.template(OZ.questionSubView, item[0]);
                 q[item[0].formId] = q[item[0].formId] || '';
                 q[item[0].formId] += questionView; 
             });
@@ -796,7 +771,7 @@ $(document).on('click', '#detail-submissions-table tr', function(){
             var tpl = '';
             _.each(forms, function(item, index, list){
                 item[0].questions = q[item[0].formId];
-                tpl += _.template(OZ.formView, item[0]);
+                tpl += _.template(OZ.formSubView, item[0]);
                 
             });
             
@@ -871,7 +846,44 @@ function loadItemDetails(type, id, row)
                     }
                     
                     $.post(url('ajax/save-user-permission'), params, function(response){
-                        console.log(response);
+                        if(response.status)
+                        {
+                            
+                        }
+                        else
+                        {
+                            
+                        }
+                    }, 'json');
+                }
+            });
+            
+            $('.app-permission-select').multiselect({ 
+                maxHeight : 200,
+                buttonClass: 'btn btn-primary',
+                onChange : function(option, checked){
+                    if(option.val() === 'multiselect-all')
+                    {
+                        var params = {
+                            all : true,
+                            selected : _.pluck(option.parent().serializeArray(), 'value').splice(1),
+                            type : option.attr('type'),
+                            checked : checked,
+                            appId : option.attr('appId')
+                        };
+                    }
+                    else
+                    {
+                        var params = {
+                            all : false,
+                            selected : option.val(),
+                            type : option.attr('type'),
+                            checked : checked,
+                            appId : option.attr('appId')
+                        };
+                    }
+                    
+                    $.post(url('ajax/save-app-permission'), params, function(response){
                         if(response.status)
                         {
                             

@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<div class="table-responsive table-hover">
     <table id="items-table" class="table">
         <thead>
             <tr style="white-space: nowrap;">

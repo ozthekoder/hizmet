@@ -9,7 +9,7 @@
                         <li class="list-group-item"><span><span class="label label-primary">Name</span> <%= firstName + ' ' + lastName %></span></li>
                         <li class="list-group-item"><span><span class="label label-primary">E-mail</span> <%= email %></span></li>
                     </ul>
-                    <div class="btn-group" style="display: block;margin: 5px auto;min-height: 34px;">
+                    <div class="btn-group" style="display: flex;margin: 5px auto;min-height: 34px;">
                         <button style="width:186px;" disabled="disabled" type="button" class="btn btn-default">Regional Permissions</button>
                         <select class="user-permission-select multiselect" multiple="multiple" name="regionPermissions">
                             <option userId="<%= id %>" type="regionId" value="multiselect-all"> Select all</option>
@@ -28,7 +28,7 @@
                             %>
                         </select>
                     </div>
-                    <div class="btn-group" style="display: block;margin: 5px auto;min-height: 34px;">
+                    <div class="btn-group" style="display: flex;margin: 5px auto;min-height: 34px;">
                         <button disabled="disabled" type="button" class="btn btn-default">Federational Permissions</button>
                         <select class="user-permission-select multiselect" multiple="multiple" name="fedPermissions">
                             <option userId="<%= id %>" type="fedId" value="multiselect-all"> Select all</option>

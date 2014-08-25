@@ -27,9 +27,8 @@
         <select name="answer">
             <option value="" selected>None Selected</option>
             <% _.each(choices, function(element, index, list){ %>
-            <option data-id="<%= element.id %>" data-choice="<%= element.choice %>" choiceid="<% element.id %>" value="<%= element.id %>"><%= element.choice %></option>
+                <%= choiceTpl(element) %>
             <% }); %>
-            
         </select>
         <%
         break;
@@ -39,7 +38,7 @@
         <select class="multiselect" multiple="multiple" name="answer">
             <option value="multiselect-all"> Select all</option>
             <% _.each(choices, function(element, index, list){ %>
-            <option data-id="<%= element.id %>" data-choice="<%= element.choice %>" choiceid="<% element.id %>" value="<%= element.id %>"><%= element.choice %></option>
+                <%= choiceTpl(element) %>
             <% }); %>
         </select>
         <%

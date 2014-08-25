@@ -5,7 +5,7 @@
             <div class="row">
                 <div class="col-md-7">
                     
-                    <div class="modal fade" id="createNewAppModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!--                    <div class="modal fade" id="createNewAppModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -22,8 +22,8 @@
                                 
                             </div>
                         </div>
-                    </div>
-                    <div class="modal fade" id="createNewFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    </div>-->
+<!--                    <div class="modal fade" id="createNewFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-sm">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -42,8 +42,8 @@
                                   </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal fade" id="addNewQuestionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    </div>-->
+<!--                    <div class="modal fade" id="addNewQuestionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -79,10 +79,10 @@
                                   </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="btn-group">
                         
-                        <button data-toggle="modal" id="create-new-app" data-target="#createNewAppModal" type="button" class="btn btn-primary"><span class="icon-plus" style="margin-right: 5px;"></span>Create New Application</button>
+                        <button  id="create-new-app"  type="button" class="btn btn-primary"><span class="icon-plus" style="margin-right: 5px;"></span>Create New Application</button>
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                                 <span class="icon-query" style="margin-right: 5px;"></span>
