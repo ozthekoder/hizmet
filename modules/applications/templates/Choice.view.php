@@ -1,0 +1,1 @@
+<option data-id="<%= id %>" data-choice="<%= choice %>" choiceid="<%= id %>" value="<%= id %>" class="oz-choice"><%= choice %></option>
