@@ -37,7 +37,8 @@ class Create extends Module
                                                 Question.order as questionOrder,
                                                 Question.type as questionType,
                                                 Choice.id as choiceId,
-                                                Choice.choice as choice
+                                                Choice.choice as choice,
+                                                Choice.afterText as afterText
                                                 from
                                                 Application left join 
                                                 Form left join 
@@ -100,18 +101,21 @@ class Create extends Module
                         'type' => $question[0]['questionType'],
                         'choices' => array()
                     );
-                $foo['choices'] = __::groupBy($question, 'choiceId');
-                
-                $k = 0;
-                foreach($foo['choices'] as $choice)
+                if(intval($question[0]['questionType']) == MULTICHOICE_MULTISELECT || intval($question[0]['questionType']) == MULTICHOICE_SINGLESELECT)
                 {
-                    $forms[$i]['questions'][$j]['choices'][] = array(
-                            'id' => $choice['choiceId'],
-                            'choice' => $choice['choice']
+                    $foo['choices'] = __::groupBy($question, 'choiceId');
+
+                    $k = 0;
+                    foreach($foo['choices'] as $choice)
+                    {
+                        $forms[$i]['questions'][$j]['choices'][] = array(
+                            'id' => $choice[0]['choiceId'],
+                            'choice' => $choice[0]['choice'],
+                            'afterText' => $choice[0]['afterText']
                         );
-                    $k++;
+                        $k++;
+                    }
                 }
-                
                 $j++;
             }
             

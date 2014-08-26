@@ -36,47 +36,14 @@ class Moderators extends Module
                       </table>';
         jsConfig('modalTable', $modalTable);
         jsConfig('detailsView', $detailsView->createHTML());
+        $boss= $_SESSION['user']->accountType;
         if($_SESSION['user']->accountType == SUPER_ADMIN)
         {
-            $applicants = EventManager::$db->query("SELECT * FROM User
-                                                left join (select id as nationId, fedId, `name` as nation from Nationality) as n
-                                                on User.nationality = n.nationId
-                                                left join (select id as fedId, `name` as fedName from Federation) as f
-                                                on n.fedId = f.fedId
-                                                left join (select id as stateId, short as state, regionId from State) as s
-                                                on User.state=s.stateId
-                                                where User.accountType > 0
-                                                group by User.id;");
+            $applicants = EventManager::$db->query("select * from User where accountType>0 and boss=$boss and id != $boss;");
         }
         else
         {
-
-            $permissions = getPermissions('User', $_SESSION['user']->id);
-            $regionFilter = '';
-            $fedFilter = '';
-            foreach ($permissions['Federation'] as $i => $p)
-            {
-                $or = '';
-                if($i < count($permissions['Federation'])-1)
-                    $or = ' or ';
-                $fedFilter .= 'f.fedId=' . $p->fedId . $or;
-            }
-            foreach ($permissions['Region'] as $i => $p)
-            {
-                $or = '';
-                if($i < count($permissions['Region'])-1)
-                    $or = ' or ';
-                $regionFilter .= 's.regionId=' . $p->regionId . $or;
-            }
-            $sql = "SELECT * FROM User
-                    left join (select id as nationId, fedId, `name` as nation from Nationality) as n
-                    on User.nationality = n.nationId
-                    left join (select id as fedId, `name` as fedName from Federation) as f
-                    on n.fedId = f.fedId
-                    left join (select id as stateId, short as state, regionId from State) as s
-                    on User.state=s.stateId 
-                    where User.accountType=1 and ($fedFilter) and ($regionFilter)
-                    group by User.id;";
+            $sql = "SELECT * FROM User where accountType=1 and boss=$boss and id != $boss;";
             $applicants = EventManager::$db->query($sql);
         }
         $rows = '';

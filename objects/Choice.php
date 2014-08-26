@@ -7,6 +7,7 @@ class Choice extends Object
     public $formId;
     public $appId;
     public $choice;
+    public $afterText;
     
 }
 ?>

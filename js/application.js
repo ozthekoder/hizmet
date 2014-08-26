@@ -14,6 +14,10 @@ function updateForms(){
     }
 };
 
+function displayAfterContent(ids){
+    $('#question-' + ids.questionId).append('<br/><br/>' + OZ.afterText[ids.choiceId]);
+}
+
 $(function(){
     $('#sidebar').affix({
         offset: {
@@ -36,6 +40,7 @@ $(function(){
         {
             $('input[type="file"]', $(this)).fileinput();
         }
+        
     })
     
     $('select').each(function(){
@@ -83,6 +88,14 @@ $(function(){
                     {
                         option.parent().find('option[value=""]').remove();
                         this.rebuild();
+                    }
+                    
+                    if(!_.isUndefined(OZ.afterText[params.choiceId]))
+                    {
+                        displayAfterContent({
+                            choiceId : params.choiceId,
+                            questionId : params.questionId
+                        });
                     }
                 }
                 var select = this

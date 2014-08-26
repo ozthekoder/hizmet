@@ -335,6 +335,7 @@ class EventManager
                                                     'appId' => $app->id,
                                                     'questionId' => $question->id,
                                                     'formId' => $f->id,
+                                                    'afterText' => $choice['afterText']
                                                 ));
                                                 if($c = $c->save())
                                                 {

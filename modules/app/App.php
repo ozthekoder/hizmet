@@ -33,7 +33,8 @@ class App extends Module
                                                 Question.order as questionOrder,
                                                 Question.type as questionType,
                                                 Choice.id as choiceId,
-                                                Choice.choice as choice
+                                                Choice.choice as choice,
+                                                Choice.afterText as afterText
                                                 from
                                                 Application left join 
                                                 Form left join 
@@ -67,12 +68,17 @@ class App extends Module
         $selected = array();
         $questions = array();
         $forms = array();
+        $afterText = array();
         foreach($app as $c)
         {
             $choiceId = $c['choiceId'];
             $c['selected'] = '';
             if(!$selected[$c['questionId']])
                 $selected[$c['questionId']] = false;
+            if(isset($c['afterText']) && !empty($c['afterText']))
+            {
+                $afterText[$choiceId] = $c['afterText'];
+            }
             foreach ($answers as $answer)
             {
                 if($answer->choiceId === $choiceId)
@@ -85,7 +91,7 @@ class App extends Module
             $choices[$c['questionId']] .= $choiceView->createHTML($c);
                 
         }
-        
+        jsConfig('afterText', $afterText);
         foreach($app as $q)
         {
             $questionId = $q['questionId'];

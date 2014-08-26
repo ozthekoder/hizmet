@@ -2,6 +2,7 @@
 session_start();
 include_once 'config.php';
 include_once 'underscore.php';
+include_once 'xlsxwriter.class.php';
 function __autoload($classname)
 {
     $filename = $classname . '.php';

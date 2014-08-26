@@ -274,6 +274,7 @@ $(document).on('click', '.dropdown-menu:not(.multiselect-container) li', functio
 
 $(document).on('click', '#question-type li', function(){
     $('#add-choice-input').remove();
+    $('.choice').remove();
     switch(parseInt($(this).attr('value')))
     {
         case 0:
@@ -291,9 +292,11 @@ $(document).on('click', '#question-type li', function(){
 
 $(document).on('click', '#add-choice', function(){
     var value = $('#choice-text').val();
+    
+    var afterText = parseInt($('[modalid="createNewQuestionModal"] .dropdown-toggle').val()) === 3 ? '' : '<span class="icon-info-2 add-text-to-choice trans-all" style=""></span>';
     if(value != '')
     {
-        $('#add-choice-input').before('<div order="' + $('.choice').length + '" class="well well-sm choice"><span class="label label-primary" style="margin-right:5px;">Choice ' + ($('.choice').length + 1) + '</span><span class="choice-text">' + value + '</span><span class="icon-remove remove-choice trans-all" style=""></span></div>');
+        $('#add-choice-input').before('<div order="' + $('.choice').length + '" class="well well-sm choice"><span class="label label-primary" style="margin-right:5px;">Choice ' + ($('.choice').length + 1) + '</span><span class="choice-text">' + value + '</span>' + afterText + '<span class="icon-remove remove-choice trans-all" style=""></span></div>');
     }
     else alert('Please enter a value first!');
     
@@ -310,6 +313,24 @@ $(document).on('click', '.remove-choice', function(){
         $(this).find('.label').text('Choice ' + (i+1));
     });
     
+});
+
+$(document).on('click', '.add-text-to-choice', function(){
+    
+    var choice = $(this).closest('.choice');
+    if(choice.find('.input-group').length > 0)
+    {
+        $('.input-group', choice).remove();
+    }
+    else
+    {
+        var txt = '<div class="input-group input-group-sm" style="margin-top: 10px;">\n\
+                        <span class="input-group-addon">After Html/Text</span>\n\
+                        <input type="text" name="afterText" class="after-text form-control" placeholder="Enter Html/Text..">\n\
+                    </div>'
+        choice.append(txt);
+    }
+        
 });
 
 $(document).on('click', '[modalid="createNewQuestionModal"] .modalDone', function(){
@@ -333,7 +354,8 @@ $(document).on('click', '[modalid="createNewQuestionModal"] .modalDone', functio
             parent.find('.well').each(function(){
                 choices.push({
                     id : 0,
-                    choice : $('.choice-text', $(this)).text()
+                    choice : $('.choice-text', $(this)).text(),
+                    afterText : $('.after-text', $(this)).val()
                 });
             });
             break; 

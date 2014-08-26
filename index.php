@@ -5,7 +5,7 @@ include_once('util.php');
 
 $eventManager = new EventManager();
 
-//EventManager::$db->createObjectClassFromTable('Permission');
+//EventManager::$db->createObjectClassFromTable('Choice');
 //$array = array(
 //    'email' => 'oozdemir2704@gmail.com',
 //    'password' => 'Kafa1500',
