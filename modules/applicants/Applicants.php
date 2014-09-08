@@ -52,14 +52,14 @@ class Applicants extends Module
                     $or = '';
                     if($i < count($permissions['Federation'])-1)
                         $or = ' or ';
-                    $fedFilter .= 'f.fedId=' . $p->fedId . $or;
+                    $fedFilter .= 'f.fedId=' . $p['fedId'] . $or;
                 }
                 foreach ($permissions['Region'] as $i => $p)
                 {
                     $or = '';
                     if($i < count($permissions['Region'])-1)
                         $or = ' or ';
-                    $regionFilter .= 's.regionId=' . $p->regionId . $or;
+                    $regionFilter .= 's.regionId=' . $p['regionId'] . $or;
                 }
                 $sql = "SELECT * FROM User
                         left join (select id as nationId, fedId, `name` as nation from Nationality) as n
